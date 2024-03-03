@@ -108,6 +108,7 @@ def login():
 
 
 @app.route('/send_param', methods=['GET', 'POST'])
+@login_required
 def send_param():
     form = Send_param()
     db_sess = db_session.create_session()
