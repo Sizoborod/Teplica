@@ -19,14 +19,15 @@ def global_init(db_file):
 
     conn_str = f'sqlite:///db/teplica.db?check_same_thread=False'
     print(f"Подключение к базе данных по адресу {conn_str}")
-
+    print('готовлюсь')
     engine = sa.create_engine(conn_str, echo=False)
     __factory = orm.sessionmaker(bind=engine)
-
+    print('начинаю')
     # noinspection PyUnresolvedReferences
     from . import __all_models
-
+    print('еще чуток')
     SqlAlchemyBase.metadata.create_all(engine)
+    print('все')
 
 
 def create_session() -> Session:
