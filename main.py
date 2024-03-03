@@ -21,7 +21,7 @@ from data.status import Status
 from flask_restful import reqparse, abort, Api, Resource
 
 
-db_session.global_init("../db/teplica.db")
+db_session.global_init("teplica.db")
 app = Flask(__name__)
 api = flask_restful.Api(app)
 
