@@ -145,7 +145,7 @@ def send_param():
         status.send = 0
         db_sess.commit()
         print('Ок')
-        return redirect("/success")
+        return redirect("/send_param")
     print('овторяем')
     return render_template('send_param.html', title='Передача параметров', form=form, up=False)
 
