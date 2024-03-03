@@ -104,7 +104,7 @@ def login():
             login_user(user, remember=form.remember_me.data)
             return redirect("/table/0")
         return render_template('login.html', message="Wrong login or password", form=form, up=False)
-    return render_template('login.html', title='Authorization', form=form, up=False)
+    return render_template('login.html', title='Авторизация', form=form, up=False)
 
 
 @app.route('/send_param', methods=['GET', 'POST'])
