@@ -1,0 +1,46 @@
+﻿{% extends "base.html" %}
+
+{% block content %}
+
+<div id="WEB_GAUGE1" class="widgets--widget"
+     style="width: 106px; height: 200px; position: absolute; display: block; transform: translate(8px, 8px);">
+    <div class="widgets--widget-limited-line gauge-widget">
+        <div class="widgets--widget-label" style="line-height: normal;">
+            <div class="widgets--widget-limited-line">Temp in</div>
+        </div>
+        <div class="gauge-widget-content">
+            <div class="gauge">
+                <div class="ant-progress ant-progress-circle ant-progress-status-normal ant-progress-show-info ant-progress-default gauge-progress"
+                     role="progressbar" style="height: 57.4px;">
+                    <div class="ant-progress-inner" style="width: 82px; height: 82px; font-size: 18.3px;">
+                        <svg class="ant-progress-circle" viewBox="-50 -50 100 100" role="presentation">
+                            <circle class="ant-progress-circle-trail" r="45" cx="0" cy="0"
+                                    stroke="var(--color-black-04)" stroke-linecap="round" stroke-width="10"
+                                    style="stroke: var(--color-black-04); stroke-dasharray: 188.496px, 282.743; stroke-dashoffset: 0; transform: rotate(150deg); transform-origin: 0px 0px; transition: stroke-dashoffset 0.3s ease 0s, stroke-dasharray 0.3s ease 0s, stroke 0.3s ease 0s, stroke-width 0.06s ease 0.3s, opacity 0.3s ease 0s; fill-opacity: 0;"></circle>
+                            <circle class="ant-progress-circle-path" r="45" cx="0" cy="0" stroke-linecap="round"
+                                    stroke-width="5" opacity="1"
+                                    style="stroke: rgb(161, 116, 224); stroke-dasharray: 188.496px, 282.743; stroke-dashoffset: 0; transform: rotate(150deg); transform-origin: 0px 0px; transition: stroke-dashoffset 0.3s ease 0s, stroke-dasharray 0.3s ease 0s, stroke 0.3s ease 0s, stroke-width 0.06s ease 0.3s, opacity ease 0s; fill-opacity: 0;"></circle>
+                            <circle class="ant-progress-circle-path" r="45" cx="0" cy="0" stroke-linecap="round"
+                                    stroke-width="1" opacity="1"
+                                    style="stroke: rgb(82, 196, 26); stroke-dasharray: 188.496px, 282.743; stroke-dashoffset: 0; transform: rotate(150deg); transform-origin: 0px 0px; transition: stroke-dashoffset 0.3s ease 0s, stroke-dasharray 0.3s ease 0s, stroke 0.3s ease 0s, stroke-width 0.06s ease 0.3s, opacity ease 0s; fill-opacity: 0;"></circle>
+
+                        </svg>
+                        <span class="ant-progress-text">
+<div class="gauge-label" style="width: calc(100% - 40px);">
+<div class="gauge-value">
+<span class="gauge-value-number">50</span>
+</div></div></span></div>
+                </div>
+                <div class="gauge-range-info" style="font-size: 18px; width: 66px;">
+                    <div class="gauge-min">0</div>
+                    <div class="gauge-max">50</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+
+
+{% endblock %}

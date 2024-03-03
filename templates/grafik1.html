@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<br><br><br>
+
+<div class="container">
+<div class="row">
+<div class="col-md-8 col-md-offset-2">
+
+<!-- График --><div id="chart">
+
+<script>
+ $(function () {
+ $("#chart").shieldChart({
+ theme: "light",
+ exportOptions: {
+ image: false,
+ print: false
+ },
+ axisX: {
+ categoricalValues: [{{name_x}}]
+ },
+ axisY: {
+ axisTickText: {
+ format: "{text:c}"
+ },
+ title: {
+ text: "Цена (EUR в kWh)"
+ }
+ },
+ tooltipSettings: {
+ chartBound: true
+ },
+ seriesSettings: {
+ line: {
+ enablePointSelection: true,
+ pointMark: {
+ activeSettings: {
+ pointSelectedState: {
+ drawWidth: 4,
+ drawRadius: 4
+ }
+ }
+ }
+ }
+ },
+ primaryHeader: {
+ text: "Температура"
+ },
+ dataSeries: [{
+ seriesType: 'line',
+ collectionAlias: 'внутри',
+ data: {{ line1 }}
+ }, {
+ seriesType: 'line',
+ collectionAlias: 'снаружи',
+ data: {{ line2 }}
+ }]
+ });
+ });
+ </script><!-- /.График -->
+
+</div><!-- /.col-md-8 col-md-offset-2 -->
+</div><!-- /.row -->
+</div><!-- /.container -->
+{% endblock %}

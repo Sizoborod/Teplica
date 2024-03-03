@@ -1,0 +1,121 @@
+td.title {
+    background-color: "#dddddd";
+    align: "center";
+    font-size: 14pt;
+    padding: 5px;
+}
+td.ordinary {
+    background-color: "#eeeeff";
+    align: "center";
+    font-size: 14pt;
+    padding: 5px;
+}
+h4 {
+    color: #cccccc;
+    padding: 20px;
+}
+p {
+    font-size: 14pt;
+}
+table {
+padding: 0;
+margin: 0;
+   width: 100%!important;
+
+}
+
+tr,
+td,
+th {
+text-color: #ccffcc;
+text-align: center;
+vertical-align: middle;
+
+}
+
+.button_next{
+text-align: right;
+}
+
+.dashboard {text-align: center;
+align: center;
+vertical-align: middle;
+}
+
+.widgets--widget, .widgets--widget-editable {
+    background: var(--color-bg-secondary);
+    border-radius: 5px;
+    box-shadow: 0 0 10px 0 var(--color-shadow);
+}
+
+.widgets--widget-limited-line {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.widgets--widget-label {
+    align-items: center;
+    display: flex;
+    flex-basis: 26px;
+    font-family: var(--secondary-font),"Ubuntu","Roboto","Helvetica_Neue",sans-serif;
+    font-size: 18px;
+    font-weight: 400;
+    justify-content: space-between;
+    margin-bottom: 4px;
+    min-height: 26px;
+    position: static;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+}
+
+.gauge-widget-content {
+    align-items: center;
+    display: flex;
+    flex-grow: 1;
+    height: calc(100% - 48px);
+    justify-content: center;
+}
+
+.gauge-widget .gauge {
+    align-items: center;
+    font-family: var(--widget-values-font),var(--secondary-font),"Ubuntu","Roboto","Helvetica_Neue",sans-serif;
+    justify-content: center;
+    position: relative;
+}
+
+.gauge-widget .gauge .ant-progress {
+    height: calc(100% - 27px)!important;
+}
+
+.gauge-widget .gauge-range-info {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    max-width: 100%;
+}
+
+.box {
+width:100px;
+height:150px;
+background-color:#6B86A6;
+border-radius: 10px;
+}
+
+.box-text-head {
+    height: calc(100% - 100px);
+    align-items: center;
+    display: flex;
+    flex-basis: 26px;
+    font-family: var(--secondary-font),"Ubuntu","Roboto","Helvetica_Neue",sans-serif;
+    font-size: 18px;
+    font-weight: 400;
+    justify-content: center;
+    margin-bottom: 4px;
+    min-height: 26px;
+    position: static;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+}

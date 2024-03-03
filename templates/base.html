@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet"
+          href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/gauge1.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/gauge2.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/gauge3.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/gauge4.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/gauge5.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/gauge6.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/gauge7.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/gauge8.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/gauge9.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/gauge10.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/gauge11.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/gauge12.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/gauge13.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/gauge14.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/gauge15.css"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/gauge16.css"/>
+
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css"/>
+
+    <link type="text/css" rel="StyleSheet" href="https://bootstraptema.ru/plugins/2016/shieldui/style.css"/>
+    <script src="https://bootstraptema.ru/plugins/jquery/jquery-1.11.3.min.js"></script>
+    <script src="https://bootstraptema.ru/plugins/2016/shieldui/script.js"></script>
+
+    <title>{{title}}</title>
+
+    <script>
+{% if up %}
+            reloader = setTimeout(reload, 5000);
+    function reload(){
+         window.location.reload();
+    //      window.location.replace(url);  -  редирект на любую другую страницу
+    };
+
+    $('body').on('action','element',function(){
+          clearTimeout(reloader);  // очищаем таймаут и тем самым начинаем отсчет 5 секунд
+    });  {% endif %}
+function process(index) {
+    $.post("/process_data/", {'index': index}, function (data, status) {
+
+    });
+}
+    </script>
+
+</head>
+<body>
+<header>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="../readme">Умная теплица</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="../table/0">Таблица</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../grafik">Графики</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../dashboard">Управление</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="../send_param">Настройка</a>
+                    </li>
+                </ul>
+            </div>
+            {% if current_user.is_authenticated %}
+            <a class="navbar-brand" href="/logout">{{ current_user.name }} {{ current_user.surname }}</a>
+            {% else %}
+            <p>
+                <a class="btn btn-success" href="/login">Войти</a>
+            </p>
+            {% endif %}
+    </nav>
+</header>
+<!-- Begin page content -->
+<main role="main" class="container">
+    {% if current_user.is_authenticated %}
+    <p align="justify">
+        <a href="departments" class="btn btn-secondary">View Departments</a>
+        <a href="addjob" class="btn btn-secondary">Add job</a>
+        <a href="add_depart" class="btn btn-secondary">Add a Department</a></p>
+    <button type="button" class="btn btn-dark" onclick="process(1, );">Нажать 1</button>
+    <button type="button" class="btn btn-dark" onclick="process(2);">Нажать 2</button>
+    {% endif %}
+    {% block content %}{% endblock %}
+</main>
+</body>
+</html>

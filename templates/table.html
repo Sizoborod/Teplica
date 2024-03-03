@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+
+<meta charset="UTF-8">
+<div class="button_next">
+<p>
+    {% for item in range(len_data) %}
+      {% if page != item %}
+        <a href="{{ item  }}" class="btn btn-secondary">{{ item}}</a>
+      {% else %}
+         <a href="" class="btn btn-secondary">...</a>
+   {% endif %}
+    {% endfor %}
+<div class="table_container">
+
+
+<table class="table table-striped table-hover table-bordered">
+    <caption>Данные таблицы</caption>
+    <thead>
+    <tr>
+      {% if current_user.is_authenticated and current_user.id == 1  %}
+      <th scope="col"align="center">Логин</th>
+       {% endif %}
+      <th scope="col"align="center">Дата</th>
+      <th scope="col">Время</th>
+      <th scope="col">Температура внутри</th>
+      <th scope="col">Влажность внутри</th>
+      <th scope="col">Температура снаружи</th>
+      <th scope="col">Влажность снаружи</th>
+      <th scope="col">Влажность почвы 1</th>
+      <th scope="col">Влажность почвы 2</th>
+      <th scope="col">Освещение</th>
+      <th scope="col">Насос</th>
+      <th scope="col">Нагрев</th>
+      <th scope="col">Свет</th>
+      <th scope="col">Вент</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for item in base_data[page * 10:(page + 1)*10] %}
+
+  <tr>
+    {% if current_user.is_authenticated and current_user.id == 1  %}
+      <th scope="col"align="center">{{ names[item.token][2] }}</th>
+       {% endif %}
+    <th scope="row">{{item.date.strftime("%d.%m.%Y")}}</td>
+    <td>{{item.date.strftime("%H:%M:%S")}}</td>
+    <td>{{item.temp_in}}</td>
+    <td>{{item.humidity_in}}</td>
+    <td>{{item.temp_out}}</td>
+    <td>{{item.humidity_out}}</td>
+    <td>{{item.moisture1}}</td>
+    <td>{{item.moisture2}}</td>
+    <td>{{item.light}}</td>
+    <td>{{item.pump}}</td>
+    <td>{{item.heat}}</td>
+    <td>{{item.led}}</td>
+    <td>{{item.fan}}</td>
+  </tr>
+
+  {% endfor %}
+  </tbody>
+  </table>
+</div>
+{% endblock %}

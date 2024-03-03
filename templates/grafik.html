@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+
+<div class="container">
+<div class="row">
+<div class="col-md-8 col-md-offset-2">
+
+<!-- График --><div id="chart"></div>
+
+<script>
+ $(function () {
+ $("#chart").shieldChart({
+ theme: "light",
+ primaryHeader: {
+ text: "Показатели сенсоров с теплицы"
+ },
+ exportOptions: {
+ image: false,
+ print: false
+ },
+ axisY: [{
+ min: 1,
+ max: 80,
+ title: {
+ text: 'Влажность воздуха',
+ style: {
+ color: '#4DB0F5'
+ }
+ },
+ axisTickText: {
+ style: {
+ color: '#4DB0F5'
+ }
+ }
+ }, {
+ min: 1,
+ max: 80,
+ title: {
+ text: 'Температура воздуха',
+ style: {
+ color: '#FFC500'
+ }
+ },
+ swapLocation: true,
+ axisTickText: {
+ style: {
+ color: '#FFC500'
+ }
+ }
+ }, {
+ min: 1,
+ max: 824,
+ title: {
+ text: 'Влажность почвы',
+ style: {
+ color: '#FF1800'
+ }
+ },
+ swapLocation: true,
+ axisTickText: {
+ style: {
+ color: '#FF1800'
+ }
+ }
+ }],
+ dataSeries: [{
+ seriesType: 'line',
+ axis: 1,
+ collectionAlias: "Температура внутри",
+ data: {{ line1 }}
+ }, {
+ seriesType: 'line',
+ axisY: 0,
+ collectionAlias: "Влажность воздуха",
+ data: {{ line2 }}
+ }, {
+ seriesType: 'line',
+ axisY: 2,
+ collectionAlias: "Влажность почвы",
+ data: {{ line3 }}
+ }]
+ });
+ });
+ </script><!-- /.График -->
+
+</div><!-- /.col-md-8 col-md-offset-2 -->
+</div><!-- /.row -->
+</div><!-- /.container -->
+
+{% endblock %}

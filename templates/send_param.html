@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h3>Изменение порогов датчиков</h3>
+{% if message%}
+<div class="alert alert-danger" role="alert">
+  {{message}}
+</div>
+{% endif %}
+
+<form action="" method="post">
+    {{ form.hidden_tag() }}
+    {{ form.csrf_token }}
+    <p>
+        {{ form.light_on.label }}<br>
+        {{ form.light_on(class="form-control") }}<br>
+        {% for error in form.light_on.errors %}
+    <p class="alert alert-danger" role="alert">
+        {{ error }}
+    </p>
+    {% endfor %}
+    </p>
+    <p>
+        {{ form.heat_on.label }}<br>
+        {{ form.heat_on(class="form-control") }}<br>
+        {% for error in form.heat_on.errors %}
+    <p class="alert alert-danger" role="alert">
+        {{ error }}
+    </p>
+    {% endfor %}
+    </p>
+
+    <p>
+        {{ form.heat_off.label }}<br>
+        {{ form.heat_off(class="form-control") }}<br>
+        {% for error in form.heat_off.errors %}
+    <p class="alert alert-danger" role="alert">
+        {{ error }}
+    </p>
+    {% endfor %}
+    </p>
+    <p>
+        {{ form.pump_on.label }}<br>
+        {{ form.pump_on(class="form-control") }}<br>
+        {% for error in form.pump_on.errors %}
+    <p class="alert alert-danger" role="alert">
+        {{ error }}
+    </p>
+    {% endfor %}
+    </p>
+
+    <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+
+</form>
+{% endblock %}

@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block content %}
+<meta charset="UTF-8">
+<div class="dashboard"><h3>Показания датчиков {{data.date.strftime("%d.%m.%Y")}} - {{data.date.strftime("%H:%M:%S")}}</h3></div>
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <div class="dashboard"><p class="h5">Температура внутри</p>
+                <button type="button" class="btn btn-outline-danger btn-lg" disabled>
+                    {{data.temp_in }}°C
+                </button>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="dashboard"><p class="h5">Влажность внутри </p>
+                <button type="button" class="btn btn-outline-primary btn-lg" disabled>{{ data.humidity_in }}%</button>
+            </div>
+        </div>
+        <div class="col">
+            <div class="dashboard"><p class="h5">Температура снаружи </p>
+                <button type="button" class="btn btn-outline-danger btn-lg" disabled>{{ data.temp_out }}°C</button>
+            </div>
+        </div>
+        <div class="col">
+            <div class="dashboard"><p class="h5">Влажность снаружи </p>
+                <button type="button" class="btn btn-outline-primary btn-lg" disabled>{{ data.humidity_out }}%</button>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="dashboard"><p class="h5">Влажность почвы 1</p>
+                <button type="button" class="btn btn-outline-success btn-lg" disabled>{{ data.moisture1 }}</button>
+            </div>
+        </div>
+        <div class="col">
+            <div class="dashboard"><p class="h5">Влажность почвы 2</p>
+                <button type="button" class="btn btn-outline-success btn-lg" disabled>{{ data.moisture2 }}</button>
+            </div>
+        </div>
+        <div class="col">
+            <div class="dashboard"><p class="h5">Освещеность </p>
+                <button type="button" class="btn btn-outline-secondary btn-lg" disabled>{{ data.light }}</button>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="dashboard"><p class="h5">Подогрев</p>
+                <div class="btn-group">
+                    <input type="radio" class="btn-check" name="options1" id="success1" autocomplete="off"
+                           {% if data.heat == 1 %} checked {% endif %} disabled>
+                    <label class="btn btn-outline-success" for="success2">Вкл</label>
+                    <input type="radio" class="btn-check" name="options1" id="danger1" autocomplete="off"
+                           {% if data.heat == 0 %} checked {% endif %}
+                           disabled>
+                    <label class="btn btn-outline-danger" for="danger2">Выкл</label>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="dashboard"><p class="h5">Свет</p>
+                <div class="btn-group">
+                    <input type="radio" class="btn-check" name="options2" id="success2" autocomplete="off" {% if data.led  == 1 %} checked {% endif %} disabled>
+                    <label class="btn btn-outline-success" for="success2">Вкл</label>
+                    <input type="radio" class="btn-check" name="options2" id="danger2" autocomplete="off" {% if data.led  == 0 %} checked {% endif %}
+                           disabled>
+                    <label class="btn btn-outline-danger" for="danger2">Выкл</label>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="dashboard"><p class="h5">Вентилятор</p>
+                <div class="btn-group">
+                    <input type="radio" class="btn-check" name="options3" id="success3" autocomplete="off" {% if data.fan   == 1 %} checked {% endif %}disabled>
+                    <label class="btn btn-outline-success" for="success3">Вкл</label>
+                    <input type="radio" class="btn-check" name="options3" id="danger3" autocomplete="off" {% if data.fan   ==0 %} checked {% endif %}
+                           disabled>
+                    <label class="btn btn-outline-danger" for="danger3">Выкл</label>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="dashboard"><p class="h5">Насос</p>
+                <div class="btn-group">
+                    <input type="radio" class="btn-check" name="options4d" id="success4" autocomplete="off" {% if data.pump    == 1 %} checked {% endif %}disabled>
+                    <label class="btn btn-outline-success" for="success4">Вкл</label>
+                    <input type="radio" class="btn-check" name="options4" id="danger4" autocomplete="off" {% if data.pump    == 0 %} checked {% endif %}
+                           disabled>
+                    <label class="btn btn-outline-danger" for="danger4">Выкл</label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+
+{% endblock %}
