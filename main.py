@@ -101,7 +101,7 @@ def login():
         db_sess = db_session.create_session()
         user = db_sess.query(User).filter(User.email == form.email.data).first()
         msg = f'{User.email} - User.email\n{form.password.data} - form.password.data\n'
-        a = f'___ - user.check_password(form.password.data)\n')
+        a = f'___ - user.check_password(form.password.data)\n'
         if user and user.check_password(form.password.data):
             login_user(user, remember=form.remember_me.data)
             return redirect("/table/0")
