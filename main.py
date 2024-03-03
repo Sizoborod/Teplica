@@ -14,7 +14,6 @@ from wtforms.validators import DataRequired
 import random as ran
 from data import db_session
 from data.users import User
-from data.login_form import LoginForm
 from data.sensors import Sensors
 from data.login_form import LoginForm
 from data.send_param import Send_param
@@ -41,7 +40,7 @@ def load_user(user_id):
 
 @app.route('/')
 def main_window():
-    return render_template('object_manager.html')
+    return render_template('index.html')
 
 @app.route("/map")
 def map():
