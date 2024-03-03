@@ -24,7 +24,7 @@ from flask_restful import reqparse, abort, Api, Resource
 
 app = Flask(__name__)
 api = flask_restful.Api(app)
-db_session.global_init("db/teplica.db")
+
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 
 login_manager = LoginManager()
@@ -34,6 +34,7 @@ login_manager.login_view = 'login'
 
 @login_manager.user_loader
 def load_user(user_id):
+    db_session.global_init("db/teplica.db")
     db_sess = db_session.create_session()
     return db_sess.query(User).get(user_id)
 
@@ -96,6 +97,7 @@ def rucheek(keys):
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    db_session.global_init("db/teplica.db")
     form = LoginForm()
     if form.validate_on_submit():
         db_sess = db_session.create_session()
@@ -109,6 +111,7 @@ def login():
 
 @app.route('/send_param', methods=['GET', 'POST'])
 def send_param():
+    db_session.global_init("db/teplica.db")
     form = Send_param()
     db_sess = db_session.create_session()
     param = db_sess.query(Status).filter(Status.token == current_user.token).first()
@@ -146,6 +149,7 @@ def send_param():
 
 @app.route("/update/<token>")
 def update(token):
+    db_session.global_init("db/teplica.db")
     db_sess = db_session.create_session()
     status = db_sess.query(Status).filter(Status.token == token).first()
     data = {}
@@ -187,6 +191,7 @@ def readme():
 @app.route('/dashboard')
 @login_required
 def dashboard():
+    db_session.global_init("db/teplica.db")
     db_sess = db_session.create_session()
     base_data = db_sess.query(Sensors).filter(current_user.is_authenticated,
                                               (Sensors.token == current_user.token) | (current_user.id == 1)).all()
@@ -196,6 +201,7 @@ def dashboard():
 
 @app.route('/add_sensors')
 def add_sensors():
+    db_session.global_init("db/teplica.db")
     db_sess = db_session.create_session()
     sensor = Sensors()
     sensor.temp_in=request.args.get('t_in')
@@ -226,6 +232,7 @@ def add_sensors():
 @app.route('/table/<page>')
 @login_required
 def table_page(page):
+    db_session.global_init("db/teplica.db")
     db_sess = db_session.create_session()
 
 
@@ -242,6 +249,7 @@ def table_page(page):
 @login_required
 def grafik():
     count = 12
+    db_session.global_init("db/teplica.db")
     db_sess = db_session.create_session()
     base_data = db_sess.query(Sensors).filter(current_user.is_authenticated,
                                               (Sensors.token == current_user.token) | (current_user.id == 1)).all()
