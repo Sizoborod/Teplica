@@ -100,7 +100,9 @@ def login():
     if form.validate_on_submit():
         db_sess = db_session.create_session()
         user = db_sess.query(User).filter(User.email == form.email.data).first()
-        msg = f'{user} - User.email\n{form.password.data} - form.password.data\n'
+        users = db_sess.query(User).all()
+        msg = (f'{user} - User.email\n{form.password.data} - form.password.data\n'
+               f'{form.email.data} - form.email.data\n{users} - users')
         a = f'___ - user.check_password(form.password.data)\n'
         if user and user.check_password(form.password.data):
             login_user(user, remember=form.remember_me.data)
