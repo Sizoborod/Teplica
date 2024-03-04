@@ -2,7 +2,7 @@
 
 #include <ESP8266WiFi.h>                  // Библиотека для создания Wi-Fi подключения (клиент или точка доступа)
 #include <WiFiClient.h>                   // Библиотека для связи с сетевыми хостами (локальными и интернет)
-#include <TimeLib.h>                      // Библиотека для работы с временем
+// Библиотека для работы с временем
 #include <ArduinoJson.h>                  // Библиотека для разбора JSON
 
 #include <LiquidCrystal_PCF8574.h>
@@ -33,29 +33,38 @@ void setup() {
   delay(5000);// Initialize the LED_BUILTIN pin as an output
   while (WiFi.status() != WL_CONNECTED)                       // Пока соединение не установено
     delay(500);                                               //  делаем задержку в пол секунды, пока соединение не установится
-    Serial.print(WiFi.localIP());
-    lcd.clear(); // очистить экран и установить курсор в позицию 0, 0
-    lcd.setCursor(0, 0);
-    lcd.print("Connekt Wi-Fi");// печатаем нужную строку
-    lcd.setCursor(1, 0);// переводим курсор в нужную позицию
-    lcd.print(WiFi.localIP());// печатаем нужную строку
+  Serial.print(WiFi.localIP());
+  lcd.clear(); // очистить экран и установить курсор в позицию 0, 0
+  lcd.setCursor(0, 0);
+  lcd.print("Connekt Wi-Fi");// печатаем нужную строку
+  lcd.setCursor(0, 1);// переводим курсор в нужную позицию
+  lcd.print(WiFi.localIP());// печатаем нужную строку
   delay(5000);
-    
+
   while (!TimeAndWeather())                                   // Синхронизируем время микроконтроллера с реальным временем и получаем информацию о погоде
     delay(5000);
-  
+
 
 }
 
 void loop() {
-  }
+
+  lcd.clear(); // очистить экран и установить курсор в позицию 0, 0
+  lcd.print("Read");// печатаем нужную строку
+  lcd.setCursor(4, 1);// переводим курсор в нужную позицию
+  lcd.print("Params");
+  delay(5000);
+  while (!TimeAndWeather())                                   // Синхронизируем время микроконтроллера с реальным временем и получаем информацию о погоде
+    delay(5000);
+
+}
 
 bool TimeAndWeather () {                                                    // Функция синхронизации времени работы программы с реальным временем и получения информации о погоде
   if (client.connect("nikitinan.pythonanywhere.com", 80)) {                                   // Если удаётся установить соединение с указанным хостом (Порт 443 для https)
     client.println("GET /update/bXgLsghZdNVDUDM HTTP/1.1\r\nHost: nikitinan.pythonanywhere.com\r\nConnection: close\r\n\r\n"); // Отправляем параметры запроса
     delay(200);                                                             // Даём серверу время, чтобы обработать запрос
     char endOfHeaders[] = "\r\n\r\n";
-    
+
     Serial.println("endOfHeaders=");
     // Системные заголовки ответа сервера отделяются от остального содержимого двойным переводом строки
     if (!client.find(endOfHeaders)) {                                       // Отбрасываем системные заголовки ответа сервера
@@ -64,31 +73,47 @@ bool TimeAndWeather () {                                                    // �
     }
     const size_t capacity = 750;                                            // Эта константа определяет размер буфера под содержимое JSON (https://arduinojson.org/v5/assistant/)
     DynamicJsonBuffer jsonBuffer(capacity);                                 // Инициализируем буфер под JSON
-    
+
     JsonObject& root = jsonBuffer.parseObject(client);                      // Парсим JSON-модержимое ответа сервера
     client.stop();                                                          // Разрываем соединение с сервером
-      //Serial.println(root);                                   // Если ответ сервера не содержит системных заголовков, значит что-то пошло не так
+    //Serial.println(root);                                   // Если ответ сервера не содержит системных заголовков, значит что-то пошло не так
 
-    String StringCurrentTime = root["level_fan"].as<String>(); 
-    Serial.println("1");
-    Serial.println(StringCurrentTime); // Достаём значение реального текущего времени из JSON и отбрасываем от него миллисекунды
-    String StringOffset =  root["level_head_down"].as<String>();
-    Serial.println("2");
-    Serial.println(StringOffset);  // Достаём значение смещения времени по часовому поясу (в миллисекундах)
-    SunriseTime =  root["level_head_up"].as<String>();        // Достаём время восхода - Третий уровень вложенности пары ключ/значение clocks -> значение RegionID -> sunrise 
-     Serial.println("3");
-    Serial.println(SunriseTime);
-    SunsetTime =  root["level_hudrom"].as<String>().toInt();
-     Serial.println("4");
-     Serial.println(SunsetTime +2000);// Достаём время заката - Третий уровень вложенности пары ключ/значение clocks -> значение RegionID -> sunset
-    Temperature =  root["level_led"].as<String>();// Достаём время заката - Четвёртый уровень вложенности пары ключ/значение clocks -> значение RegionID -> weather -> temp
-     Serial.println("5");
-    Serial.println(Temperature);       // Достаём иконку - Четвёртый уровень вложенности пары ключ/значение clocks -> значение RegionID -> weather -> icon
+    int light_on = root["light_on"].as<String>().toInt();;
 
+    int heat_on =  root["heat_on"].as<String>().toInt();;
+
+    int heat_off =  root["heat_off"].as<String>().toInt();;
+    int pump_on =  root["pump_on"].as<String>().toInt();
+    int pump =  root["pump"].as<String>().toInt();
+    int heat =  root["heat"].as<String>().toInt();
+    int led =  root["led"].as<String>().toInt();
+    int fan =  root["fan"].as<String>().toInt();
+    lcd.clear(); // очистить экран и установить курсор в позицию 0, 0
+    lcd.setCursor(0, 0);
+    lcd.print("l=");
+    lcd.print(light_on);
+    lcd.print("on=");
+    lcd.print(heat_on);
+    lcd.print("off=");
+    lcd.print(heat_off);
+    lcd.print("p=");
+    lcd.print(pump_on);// печатаем нужную строку
+    lcd.setCursor(0, 1);// переводим курсор в нужную позицию
+    lcd.print("p=");
+    lcd.print(pump_on);
+    lcd.print(" p");
+    lcd.print(pump);
+    lcd.print("h");
+    lcd.print(heat);
+    lcd.print("l");
+    lcd.print(led);
+    lcd.print("f");
+    lcd.print(fan);// печатаем нужную строку
+    delay(5000);
     jsonBuffer.clear();                                                     // Очищаем буфер парсера JSON
-    
-                                          // Синхронизируем время
-    
+
+    // Синхронизируем время
+
     return true;
   }
   return false;
@@ -97,60 +122,19 @@ bool TimeAndWeather () {                                                    // �
 unsigned long StringToULong(String Str) {                     // Эта функция преобразует String в unsigned long
   unsigned long ULong = 0;
   for (int i = 0; i < Str.length(); i++) {                    // В цикле посимвольно переводим строку в unsigned long
-     char c = Str.charAt(i);
-     if (c < '0' || c > '9') break;
-     ULong *= 10;
-     ULong += (c - '0');
+    char c = Str.charAt(i);
+    if (c < '0' || c > '9') break;
+    ULong *= 10;
+    ULong += (c - '0');
   }
   return ULong;
 }
 
-void digitalClockDisplay(){                                   // Эта функция выводит дату и время на монитор серийного порта
-  Serial.print(leadNull(day()));
-  Serial.print(".");
-  Serial.print(leadNull(month()));
-  Serial.print(".");
-  Serial.print(year());
-  Serial.print(" ");
-  Serial.print(leadNull(hour()));
-  Serial.print(":");
-  Serial.print(leadNull(minute()));
-  Serial.print(":");
-  Serial.print(leadNull(second()));
-  Serial.println();
-}
 
-String leadNull(int digits){                                    // Функция добавляет ведущий ноль
+String leadNull(int digits) {                                   // Функция добавляет ведущий ноль
   String out = "";
-  if(digits < 10)
-    out += "0";                                               
+  if (digits < 10)
+    out += "0";
   return out + String(digits);
 }
 
-void WeatherDisplay(){  
-  char * out = strtok(icon,"-");        // Выделяем первую часть из строки до символа '-'
-  while (out != NULL) {                 // Выделяем последующие части строки в цикле, пока значение out не станет нулевым (пустым)
-      if (String(out) == "skc")         // Перебираем в условиях все возможные варианты, зашифрованные в названии иконки
-        Serial.println("Yasno");
-      else if (String(out) == "ovc")
-        Serial.println("Pasmurno");
-      else if (String(out) == "bkn")
-        Serial.println("Oblachno");
-      else if (String(out) == "ra")
-        Serial.println("Dozhd'");
-      else if (String(out) == "ts")
-        Serial.println("Groza");
-      else if (String(out) == "sn")
-        Serial.println("Sneg");
-      else if (String(out) == "bl")
-        Serial.println("Metel'");
-      else if (String(out) == "fg")
-        Serial.println("Tuman");
-      else if (String(out) == "n")
-        Serial.println("\nTemnoe vremya sutok");
-      else if (String(out) == "d")
-        Serial.println("\nSvetloe vremya sutok");
-      
-      out = strtok(NULL,"-");              // Выделяем очередную часть
-   }
-}
