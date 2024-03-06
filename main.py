@@ -174,7 +174,7 @@ def send_param():
         print('Ок')
         return redirect("/send_param")
     print('Повторяем')
-    return render_template('send_param.html', title='Передача параметров', status=dev_status(),text_button=name_button, form=form, up=False)
+    return render_template('send_param.html', title='Передача параметров', status=dev_status(), text_button=name_button, form=form, up=False)
 
 @app.route("/update/<token>")
 def update(token):
