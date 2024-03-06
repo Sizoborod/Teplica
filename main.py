@@ -22,7 +22,7 @@ from static.text.buttons_name import name_button
 from flask_restful import reqparse, abort, Api, Resource
 
 
-db_session.global_init("db/teplica.db")
+db_session.global_init("Teplica/db/teplica.db")
 app = Flask(__name__)
 api = flask_restful.Api(app)
 
@@ -34,7 +34,28 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-
+def dev_status():
+    db_sess = db_session.create_session()
+    status = db_sess.query(Status).filter(Status.token == current_user.token).first()
+    status_dev = {}
+    print(status.pump, status.fan, status.heat, status.led)
+    if status.pump:
+        status_dev['pump'] = 'Вкл'
+    else:
+        status_dev['pump'] = 'Выкл'
+    if status.fan:
+        status_dev['fan'] = 'Вкл'
+    else:
+        status_dev['fan'] = 'Выкл'
+    if status.led:
+        status_dev['led'] = 'Вкл'
+    else:
+        status_dev['led'] = 'Выкл'
+    if status.heat:
+        status_dev['heat'] = 'Вкл'
+    else:
+        status_dev['heat'] = 'Выкл'
+    return status_dev
 @login_manager.user_loader
 def load_user(user_id):
     db_sess = db_session.create_session()
@@ -192,44 +213,16 @@ def mygauge():
 def readme():
     return render_template('readme.html', up=False)
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/')
+@app.route('/dashboard')
 @login_required
 def dashboard():
     db_sess = db_session.create_session()
-    parametr = db_sess.query(Status).filter(Status.token == current_user.token).first()
-    base_data = db_sess.query(Sensors).filter(current_user.is_authenticated,
-                                              (Sensors.token == current_user.token) | (current_user.id == 1)).all()
-
-    if request.is_json:
-        text = request.args.get('button_text')
-        id = request.args.get('cl')
-        print(text, id)
-        on_off = 'hhh'
-        print(parametr.pump, parametr.fan, parametr.heat, parametr.led)
-        if text == name_button['pump']:
-            parametr.pump = not parametr.pump
-            on_off = 'Вкл' if parametr.pump else 'Выкл'
-        if text == name_button['fan']:
-            parametr.fan = not parametr.fan
-            on_off = 'Вкл' if parametr.fan else 'Выкл'
-        if text == name_button['heat']:
-            parametr.heat = not parametr.heat
-            on_off = 'Вкл' if parametr.heat else 'Выкл'
-        if text == name_button['led']:
-            parametr.led = not parametr.led
-            on_off = 'Вкл' if parametr.led else 'Выкл'
-        db_sess.commit()
-        print(on_off)
-        return jsonify({'html_paste': on_off})
-
-
-
-
-
+    status = db_sess.query(Status).filter(Status.token == current_user.token).first()
     base_data = db_sess.query(Sensors).filter(current_user.is_authenticated, (Sensors.token == current_user.token)
                                               | (current_user.id == 1)).all()
     # print(base_data)
-    return render_template('dashboard.html', token=current_user.token, data=base_data[-1], text_button=name_button, up=False)
+    return render_template('dashboard.html', status=dev_status(), token=current_user.token, data=base_data[-1], text_button=name_button, up=False)
 
 
 @app.route('/add_sensors')
@@ -273,7 +266,7 @@ def table_page(page):
     names = {name.token: (name.surname, name.name, name.email) for name in users}
     # print(int(len(base_data) / 10))
     return render_template('table.html', len_data=int(len(base_data) / 10) + 1,
-                           names=names, base_data=base_data[::-1], page=int(page), token=current_user.token,
+                           names=names, status=dev_status(),text_button=name_button, base_data=base_data[::-1], page=int(page), token=current_user.token,
                            up=True)
 
 @app.route('/grafik')
@@ -300,7 +293,7 @@ def grafik():
         moisture1.append(i.moisture1)
     # print(line_temp_in)
     # print(line_temp_out)
-    return render_template('grafik.html', line1=line_temp_in, token=current_user.token, line2=humidity_in, line3=moisture1, name_x=name_x, name_grafik='График температуры', up=True )
+    return render_template('grafik.html',status=dev_status(), text_button=name_button, line1=line_temp_in, token=current_user.token, line2=humidity_in, line3=moisture1, name_x=name_x, name_grafik='График температуры', up=True )
 
 @app.route("/update5")
 def update5():
@@ -348,19 +341,31 @@ def doit2():
     # ... обработать данные ...
 
 
-@app.route('/buttons/', methods=['GET', 'POST'])
+@app.route('/buttons', methods=['GET', 'POST'])
 def buttons():
-    text = request.args.get('button_text')
-    print(text)
     db_sess = db_session.create_session()
-    param = db_sess.query(Status).filter(Status.token == current_user.token).first()
-    return jsonify({'led': param.led, 'pump': param.pump, 'fan': param.fan, 'heat': param.heat})
+    status = db_sess.query(Status).filter(Status.token == current_user.token).first()
+    if request.is_json:
+        text = request.args.get('button_text')
+        id = request.args.get('name')
+        if id == 'pump':
+            status.pump = not status.pump
+            on_off = 'Вкл' if status.pump else 'Выкл'
+        if id == 'fan':
+            status.fan = not status.fan
+            on_off = 'Вкл' if status.fan else 'Выкл'
+        if id == 'heat':
+            status.heat = not status.heat
+            on_off = 'Вкл' if status.heat else 'Выкл'
+        if id == 'led':
+            status.led = not status.led
+            on_off = 'Вкл' if status.led else 'Выкл'
+        db_sess.commit()
+        print(on_off)
+        return jsonify({'html_paste': on_off})
 
-    index = request.form['index']
-    token = current_user.token
-    print(index, token)
-    return index
-    # ... обработать данные ...
+
+# ... обработать данные ...
 
 
 if __name__ == '__main__':

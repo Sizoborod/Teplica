@@ -5,22 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet"
           href="/static/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="/static/css/gauge1.css"/>
-    <link rel="stylesheet" type="text/css" href="/static/css/gauge2.css"/>
-    <link rel="stylesheet" type="text/css" href="/static/css/gauge3.css"/>
-    <link rel="stylesheet" type="text/css" href="/static/css/gauge4.css"/>
-    <link rel="stylesheet" type="text/css" href="/static/css/gauge5.css"/>
-    <link rel="stylesheet" type="text/css" href="/static/css/gauge6.css"/>
-    <link rel="stylesheet" type="text/css" href="/static/css/gauge7.css"/>
-    <link rel="stylesheet" type="text/css" href="/static/css/gauge8.css"/>
-    <link rel="stylesheet" type="text/css" href="/static/css/gauge9.css"/>
-    <link rel="stylesheet" type="text/css" href="/static/css/gauge10.css"/>
-    <link rel="stylesheet" type="text/css" href="/static/css/gauge11.css"/>
-    <link rel="stylesheet" type="text/css" href="/static/css/gauge12.css"/>
-    <link rel="stylesheet" type="text/css" href="/static/css/gauge13.css"/>
-    <link rel="stylesheet" type="text/css" href="/static/css/gauge14.css"/>
-    <link rel="stylesheet" type="text/css" href="/static/css/gauge15.css"/>
-    <link rel="stylesheet" type="text/css" href="/static/css/gauge16.css"/>
+
 
     <link rel="stylesheet" type="text/css" href="/static/css/style.css"/>
 
@@ -86,7 +71,19 @@ function process(index) {
 </header>
 <!-- Begin page content -->
 <main role="main" class="container">
+{% if current_user.is_authenticated %}
+<div class="dashboard"><h3>Управление устройствами</h3>
+    <p align="center" class="buttons">
 
+        {% for name in text_button %}
+
+                {{text_button[name]}} - <button class="btn {{name}} btn-secondary">{{status[name]}}</button>
+
+        {% endfor %}
+    </p>
+
+    {% endif %}
+</div>
     {% block content %}{% endblock %}
 </main>
 </body>

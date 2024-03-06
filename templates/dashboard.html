@@ -1,19 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-{% if current_user.is_authenticated %}
 
-    <p align="justify" class="buttons">
-
-        {% for name in text_button %}
-
-                {{text_button[name]}} - <button id="{{name}}" class="btn {{name}} btn-secondary">вкл</button>
-
-        {% endfor %}
-    </p>
-    <button type="button" class="btn btn-dark" onclick="process(1, );">Нажать 1</button>
-    <button type="button" class="btn btn-dark" onclick="process(2);">Нажать 2</button>
-    {% endif %}
 <meta charset="UTF-8">
 <div class="dashboard"><h3>Показания датчиков {{data.date.strftime("%d.%m.%Y")}} - {{data.date.strftime("%H:%M:%S")}}</h3></div>
 
