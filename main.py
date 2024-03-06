@@ -202,17 +202,25 @@ def dashboard():
 
     if request.is_json:
         text = request.args.get('button_text')
+        id = request.args.get('cl')
         print(text)
+        on_off = 'hhh'
+        print(parametr.pump, parametr.fan, parametr.heat, parametr.led)
         if text == name_button['pump']:
             parametr.pump = not parametr.pump
+            on_off = 'Вкл' if parametr.pump else 'Выкл'
         if text == name_button['fan']:
             parametr.fan = not parametr.fan
+            on_off = 'Вкл' if parametr.fan else 'Выкл'
         if text == name_button['heat']:
             parametr.heat = not parametr.heat
-        if text == name_button['pump']:
+            on_off = 'Вкл' if parametr.heat else 'Выкл'
+        if text == name_button['led']:
             parametr.led = not parametr.led
+            on_off = 'Вкл' if parametr.led else 'Выкл'
         db_sess.commit()
-        return jsonify({'led': parametr.led, 'pump': parametr.pump, 'fan': parametr.fan, 'heat': parametr.heat})
+        print(on_off)
+        return jsonify({'html_paste': on_off})
 
 
 

@@ -2,9 +2,13 @@
 
 {% block content %}
 {% if current_user.is_authenticated %}
+
     <p align="justify" class="buttons">
+
         {% for name in text_button %}
-            <button class="btn btn-success">{{text_button[name]}}</button>
+
+                {{text_button[name]}} - <button id="{{name}}" class="btn {{name}} btn-secondary">вкл</button>
+
         {% endfor %}
     </p>
     <button type="button" class="btn btn-dark" onclick="process(1, );">Нажать 1</button>
