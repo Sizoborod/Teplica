@@ -28,6 +28,9 @@ api = flask_restful.Api(app)
 
 
 
+
+
+
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 
 login_manager = LoginManager()
