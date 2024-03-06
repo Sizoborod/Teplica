@@ -218,7 +218,8 @@ def dashboard():
 
 
 
-    base_data = db_sess.query(Sensors).filter(current_user.is_authenticated, (Sensors.token == current_user.token) | (current_user.id == 1)).all()
+    base_data = db_sess.query(Sensors).filter(current_user.is_authenticated, (Sensors.token == current_user.token)
+                                              | (current_user.id == 1)).all()
     # print(base_data)
     return render_template('dashboard.html', token=current_user.token, data=base_data[-1], text_button=name_button, up=False)
 
