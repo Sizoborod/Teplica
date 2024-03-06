@@ -173,8 +173,8 @@ def send_param():
         db_sess.commit()
         print('Ок')
         return redirect("/send_param")
-    print('овторяем')
-    return render_template('send_param.html', title='Передача параметров', form=form, up=False)
+    print('Повторяем')
+    return render_template('send_param.html', title='Передача параметров', status=dev_status(),text_button=name_button, form=form, up=False)
 
 @app.route("/update/<token>")
 def update(token):
