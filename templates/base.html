@@ -27,10 +27,11 @@
     <link type="text/css" rel="StyleSheet" href="https://bootstraptema.ru/plugins/2016/shieldui/style.css"/>
     <script src="https://bootstraptema.ru/plugins/jquery/jquery-1.11.3.min.js"></script>
     <script src="https://bootstraptema.ru/plugins/2016/shieldui/script.js"></script>
-
+    <script src="/static/js/main.js"></script>
     <title>{{title}}</title>
 
     <script>
+
 {% if up %}
             reloader = setTimeout(reload, 5000);
     function reload(){
@@ -85,14 +86,7 @@ function process(index) {
 </header>
 <!-- Begin page content -->
 <main role="main" class="container">
-    {% if current_user.is_authenticated %}
-    <p align="justify">
-        <a href="departments" class="btn btn-secondary">View Departments</a>
-        <a href="addjob" class="btn btn-secondary">Add job</a>
-        <a href="add_depart" class="btn btn-secondary">Add a Department</a></p>
-    <button type="button" class="btn btn-dark" onclick="process(1, );">Нажать 1</button>
-    <button type="button" class="btn btn-dark" onclick="process(2);">Нажать 2</button>
-    {% endif %}
+
     {% block content %}{% endblock %}
 </main>
 </body>

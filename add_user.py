@@ -17,7 +17,7 @@ def main():
     user.email = "cap@cap.ru"
     user.hashed_password = "cap"
     user.set_password(user.hashed_password)
-    user.token = "sTGANTFwpHVLMXz"
+    user.token =
     session.add(user)
 
     session.commit()

@@ -1,6 +1,6 @@
 import datetime
 
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, jsonify
 import flask_restful
 import requests
 
@@ -18,12 +18,15 @@ from data.sensors import Sensors
 from data.login_form import LoginForm
 from data.send_param import Send_param
 from data.status import Status
+from static.text.buttons_name import name_button
 from flask_restful import reqparse, abort, Api, Resource
 
 
 db_session.global_init("db/teplica.db")
 app = Flask(__name__)
 api = flask_restful.Api(app)
+
+
 
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 
@@ -38,7 +41,7 @@ def load_user(user_id):
     return db_sess.query(User).get(user_id)
 
 
-@app.route('/')
+@app.route('/1')
 def main_window():
     return render_template('index.html')
 
@@ -189,14 +192,35 @@ def mygauge():
 def readme():
     return render_template('readme.html', up=False)
 
-@app.route('/dashboard')
+@app.route('/', methods=['GET', 'POST'])
 @login_required
 def dashboard():
     db_sess = db_session.create_session()
+    parametr = db_sess.query(Status).filter(Status.token == current_user.token).first()
     base_data = db_sess.query(Sensors).filter(current_user.is_authenticated,
                                               (Sensors.token == current_user.token) | (current_user.id == 1)).all()
+
+    if request.is_json:
+        text = request.args.get('button_text')
+        print(text)
+        if text == name_button['pump']:
+            parametr.pump = not parametr.pump
+        if text == name_button['fan']:
+            parametr.fan = not parametr.fan
+        if text == name_button['heat']:
+            parametr.heat = not parametr.heat
+        if text == name_button['pump']:
+            parametr.led = not parametr.led
+        db_sess.commit()
+        return jsonify({'led': parametr.led, 'pump': parametr.pump, 'fan': parametr.fan, 'heat': parametr.heat})
+
+
+
+
+
+    base_data = db_sess.query(Sensors).filter(current_user.is_authenticated, (Sensors.token == current_user.token) | (current_user.id == 1)).all()
     # print(base_data)
-    return render_template('dashboard.html', token=current_user.token, data=base_data[-1], up=True)
+    return render_template('dashboard.html', token=current_user.token, data=base_data[-1], text_button=name_button, up=False)
 
 
 @app.route('/add_sensors')
@@ -308,6 +332,21 @@ def doit():
 
 @app.route('/process_data/', methods=['POST'])
 def doit2():
+    index = request.form['index']
+    token = current_user.token
+    print(index, token)
+    return index
+    # ... обработать данные ...
+
+
+@app.route('/buttons/', methods=['GET', 'POST'])
+def buttons():
+    text = request.args.get('button_text')
+    print(text)
+    db_sess = db_session.create_session()
+    param = db_sess.query(Status).filter(Status.token == current_user.token).first()
+    return jsonify({'led': param.led, 'pump': param.pump, 'fan': param.fan, 'heat': param.heat})
+
     index = request.form['index']
     token = current_user.token
     print(index, token)
