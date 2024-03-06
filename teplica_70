@@ -1,0 +1,140 @@
+// Видеообзоры и уроки работы с ARDUINO и ESP8266 на http://iomoio.ru
+
+#include <ESP8266WiFi.h>                  // Библиотека для создания Wi-Fi подключения (клиент или точка доступа)
+#include <WiFiClient.h>                   // Библиотека для связи с сетевыми хостами (локальными и интернет)
+// Библиотека для работы с временем
+#include <ArduinoJson.h>                  // Библиотека для разбора JSON
+
+#include <LiquidCrystal_PCF8574.h>
+LiquidCrystal_PCF8574 lcd(0x27);
+
+
+const char* ssid = "TP-Link_182C";
+const char* password = "5090748900";
+
+String regionID = "213";                  // Код региона по Yandex для выбора часового пояса https://tech.yandex.ru/xml/doc/dg/reference/regions-docpage/
+
+String SunriseTime, Temperature;
+int SunsetTime;
+char icon[20];
+
+WiFiClient client;                        // Создаём объект для работы с удалёнными хостами
+
+void setup() {
+  Serial.begin(9600);                                         // Инициализируем вывод данных на серийный порт со скоростью 9600 бод
+  Serial.println("\n\n");
+  WiFi.begin(ssid, password);                                 // Соединяемся с WiFi-сетью
+  lcd.begin(16, 2);// у нас экран 16 столбцов на 2 строки
+  lcd.setBacklight(255); //установить яркость подсветки на максимум
+  lcd.clear(); // очистить экран и установить курсор в позицию 0, 0
+  lcd.print("Rucheek");// печатаем нужную строку
+  lcd.setCursor(4, 1);// переводим курсор в нужную позицию
+  lcd.print("Teplica 7.0");// печатаем нужную строку
+  delay(5000);// Initialize the LED_BUILTIN pin as an output
+  while (WiFi.status() != WL_CONNECTED)                       // Пока соединение не установено
+    delay(500);                                               //  делаем задержку в пол секунды, пока соединение не установится
+  Serial.print(WiFi.localIP());
+  lcd.clear(); // очистить экран и установить курсор в позицию 0, 0
+  lcd.setCursor(0, 0);
+  lcd.print("Connekt Wi-Fi");// печатаем нужную строку
+  lcd.setCursor(0, 1);// переводим курсор в нужную позицию
+  lcd.print(WiFi.localIP());// печатаем нужную строку
+  delay(5000);
+
+  while (!TimeAndWeather())                                   // Синхронизируем время микроконтроллера с реальным временем и получаем информацию о погоде
+    delay(5000);
+
+
+}
+
+void loop() {
+
+  lcd.clear(); // очистить экран и установить курсор в позицию 0, 0
+  lcd.print("Read");// печатаем нужную строку
+  lcd.setCursor(4, 1);// переводим курсор в нужную позицию
+  lcd.print("Params");
+  delay(5000);
+  while (!TimeAndWeather())                                   // Синхронизируем время микроконтроллера с реальным временем и получаем информацию о погоде
+    delay(5000);
+
+}
+
+bool TimeAndWeather () {                                                    // Функция синхронизации времени работы программы с реальным временем и получения информации о погоде
+  if (client.connect("nikitinan.pythonanywhere.com", 80)) {                                   // Если удаётся установить соединение с указанным хостом (Порт 443 для https)
+    client.println("GET /update/bXgLsghZdNVDUDM HTTP/1.1\r\nHost: nikitinan.pythonanywhere.com\r\nConnection: close\r\n\r\n"); // Отправляем параметры запроса
+    delay(200);                                                             // Даём серверу время, чтобы обработать запрос
+    char endOfHeaders[] = "\r\n\r\n";
+
+    Serial.println("endOfHeaders=");
+    // Системные заголовки ответа сервера отделяются от остального содержимого двойным переводом строки
+    if (!client.find(endOfHeaders)) {                                       // Отбрасываем системные заголовки ответа сервера
+      Serial.println("Invalid response");                                   // Если ответ сервера не содержит системных заголовков, значит что-то пошло не так
+      return false;                                                         // и пора прекращать всё это дело
+    }
+    const size_t capacity = 750;                                            // Эта константа определяет размер буфера под содержимое JSON (https://arduinojson.org/v5/assistant/)
+    DynamicJsonBuffer jsonBuffer(capacity);                                 // Инициализируем буфер под JSON
+
+    JsonObject& root = jsonBuffer.parseObject(client);                      // Парсим JSON-модержимое ответа сервера
+    client.stop();                                                          // Разрываем соединение с сервером
+    //Serial.println(root);                                   // Если ответ сервера не содержит системных заголовков, значит что-то пошло не так
+
+    int light_on = root["light_on"].as<String>().toInt();;
+
+    int heat_on =  root["heat_on"].as<String>().toInt();;
+
+    int heat_off =  root["heat_off"].as<String>().toInt();;
+    int pump_on =  root["pump_on"].as<String>().toInt();
+    int pump =  root["pump"].as<String>().toInt();
+    int heat =  root["heat"].as<String>().toInt();
+    int led =  root["led"].as<String>().toInt();
+    int fan =  root["fan"].as<String>().toInt();
+    lcd.clear(); // очистить экран и установить курсор в позицию 0, 0
+    lcd.setCursor(0, 0);
+    lcd.print("l=");
+    lcd.print(light_on);
+    lcd.print("on=");
+    lcd.print(heat_on);
+    lcd.print("off=");
+    lcd.print(heat_off);
+    lcd.print("p=");
+    lcd.print(pump_on);// печатаем нужную строку
+    lcd.setCursor(0, 1);// переводим курсор в нужную позицию
+    lcd.print("p=");
+    lcd.print(pump_on);
+    lcd.print(" p");
+    lcd.print(pump);
+    lcd.print("h");
+    lcd.print(heat);
+    lcd.print("l");
+    lcd.print(led);
+    lcd.print("f");
+    lcd.print(fan);// печатаем нужную строку
+    delay(5000);
+    jsonBuffer.clear();                                                     // Очищаем буфер парсера JSON
+
+    // Синхронизируем время
+
+    return true;
+  }
+  return false;
+}
+
+unsigned long StringToULong(String Str) {                     // Эта функция преобразует String в unsigned long
+  unsigned long ULong = 0;
+  for (int i = 0; i < Str.length(); i++) {                    // В цикле посимвольно переводим строку в unsigned long
+    char c = Str.charAt(i);
+    if (c < '0' || c > '9') break;
+    ULong *= 10;
+    ULong += (c - '0');
+  }
+  return ULong;
+}
+
+
+String leadNull(int digits) {                                   // Функция добавляет ведущий ноль
+  String out = "";
+  if (digits < 10)
+    out += "0";
+  return out + String(digits);
+}
+
