@@ -171,6 +171,10 @@ def send_param():
         status.pump_on = form.pump_on.data
         status.send = 0
         db_sess.commit()
+
+
+
+
         print('Ок')
         return redirect("/send_param")
     print('Повторяем')
