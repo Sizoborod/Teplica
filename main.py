@@ -203,7 +203,7 @@ def dashboard():
     if request.is_json:
         text = request.args.get('button_text')
         id = request.args.get('cl')
-        print(text)
+        print(text, id)
         on_off = 'hhh'
         print(parametr.pump, parametr.fan, parametr.heat, parametr.led)
         if text == name_button['pump']:
