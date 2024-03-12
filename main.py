@@ -22,6 +22,7 @@ from static.text.buttons_name import name_button
 from flask_restful import reqparse, abort, Api, Resource
 
 
+#db_session.global_init("db/teplica.db")
 db_session.global_init("Teplica/db/teplica.db")
 app = Flask(__name__)
 api = flask_restful.Api(app)
@@ -194,8 +195,9 @@ def update(token):
     data['led'] = status.led
     data['fan'] = status.fan
     status.send = 1
+    status.data = datetime.datetime.now()
     db_sess.commit()
-    print(data)
+    print(data, datetime.datetime.now)
     return data
 
 @app.route('/logout')
@@ -273,7 +275,7 @@ def table_page(page):
     names = {name.token: (name.surname, name.name, name.email) for name in users}
     # print(int(len(base_data) / 10))
     return render_template('table.html', len_data=int(len(base_data) / 10) + 1,
-                           names=names, status=dev_status(),text_button=name_button, base_data=base_data[::-1], page=int(page), token=current_user.token,
+                           names=names, status=dev_status(), text_button=name_button, base_data=base_data[::-1], page=int(page), token=current_user.token,
                            up=True)
 
 @app.route('/grafik')
