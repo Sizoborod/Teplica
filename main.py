@@ -13,6 +13,7 @@ from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired
 import random as ran
 from data import db_session
+from data.config import name_base
 from data.users import User
 from data.sensors import Sensors
 from data.login_form import LoginForm
@@ -22,8 +23,7 @@ from static.text.buttons_name import name_button
 from flask_restful import reqparse, abort, Api, Resource
 
 
-#db_session.global_init("db/teplica.db")
-db_session.global_init("Teplica/db/teplica.db")
+db_session.global_init(name_base)
 app = Flask(__name__)
 api = flask_restful.Api(app)
 

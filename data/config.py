@@ -1,0 +1,1 @@
+name_base = "db/teplica.db"
