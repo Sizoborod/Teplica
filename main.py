@@ -365,9 +365,10 @@ def buttons():
     db_sess = db_session.create_session()
     status = db_sess.query(Status).filter(Status.token == current_user.token).first()
     if request.is_json:
+        print(status.send)
         text = request.args.get('button_text')
         id = request.args.get('name')
-        status.send = 1
+        status.send = 0
         if id == 'pump':
             status.pump = not status.pump
             on_off = 'Вкл' if status.pump else 'Выкл'
@@ -381,7 +382,7 @@ def buttons():
             status.led = not status.led
             on_off = 'Вкл' if status.led else 'Выкл'
         db_sess.commit()
-        print(on_off)
+        print(on_off, status.send)
         return jsonify({'html_paste': on_off})
 
 
