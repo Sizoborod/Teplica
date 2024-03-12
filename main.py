@@ -367,6 +367,7 @@ def buttons():
     if request.is_json:
         text = request.args.get('button_text')
         id = request.args.get('name')
+        status.send = 1
         if id == 'pump':
             status.pump = not status.pump
             on_off = 'Вкл' if status.pump else 'Выкл'
