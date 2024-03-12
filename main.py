@@ -41,8 +41,9 @@ login_manager.login_view = 'login'
 def dev_status():
     db_sess = db_session.create_session()
     status = db_sess.query(Status).filter(Status.token == current_user.token).first()
-    status_dev = {}
-    print(status.pump, status.fan, status.heat, status.led)
+    status_dev = {'send': status.send, 'date': status.date.strftime("%d.%m.%Y %H:%M:%S")}
+    print(status.pump, status.fan, status.heat, status.led, status.send)
+
     if status.pump:
         status_dev['pump'] = 'Вкл'
     else:
@@ -60,6 +61,13 @@ def dev_status():
     else:
         status_dev['heat'] = 'Выкл'
     return status_dev
+
+
+def correkt_date_time(dt=datetime.datetime.now()):
+    delta_time = datetime.timedelta(hours=3)
+    dt += delta_time
+    return dt
+
 @login_manager.user_loader
 def load_user(user_id):
     db_sess = db_session.create_session()
@@ -195,9 +203,10 @@ def update(token):
     data['led'] = status.led
     data['fan'] = status.fan
     status.send = 1
-    status.data = datetime.datetime.now()
+    status.date = correkt_date_time()
+    print(status.date)
     db_sess.commit()
-    print(data, datetime.datetime.now)
+    print(data, correkt_date_time())
     return data
 
 @app.route('/logout')
@@ -238,12 +247,13 @@ def dashboard():
 def add_sensors():
     db_sess = db_session.create_session()
     sensor = Sensors()
-    sensor.temp_in=request.args.get('t_in')
-    sensor.humidity_in=request.args.get('h_in')
-    sensor.temp_out=request.args.get('t_out')
+    sensor.date = correkt_date_time()
+    sensor.temp_in = request.args.get('t_in')
+    sensor.humidity_in = request.args.get('h_in')
+    sensor.temp_out = request.args.get('t_out')
     sensor.token = request.args.get('token')
-    sensor.humidity_out=request.args.get('h_out')
-    sensor.moisture1=request.args.get('mois1')
+    sensor.humidity_out = request.args.get('h_out')
+    sensor.moisture1 = request.args.get('mois1')
     sensor.moisture2 = request.args.get('mois1')
     sensor.light = request.args.get('light')
     sensor.pump = request.args.get('pump')
