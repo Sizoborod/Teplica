@@ -1,0 +1,8 @@
+from requests import get, post, delete
+from pprint import pprint
+import requests
+
+
+r = requests.get('http://127.0.0.1:5000/update', data = {'token':'bXgLsghZdNVDUDM'})
+r = requests.get('http://127.0.0.1:5000/update/bXgLsghZdNVDUDM')
+print(r)
