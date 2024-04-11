@@ -41,7 +41,7 @@ login_manager.login_view = 'login'
 def dev_status():
     db_sess = db_session.create_session()
     status = db_sess.query(Status).filter(Status.token == current_user.token).first()
-    status_dev = {'send': status.send, 'date': status.date.strftime("%d.%m.%Y %H:%M:%S")}
+    status_dev = {'send': status.send, 'date': status.date_down.strftime("%d.%m.%Y %H:%M:%S")}
     print(status.pump, status.fan, status.heat, status.led, status.send)
 
     if status.pump:
@@ -63,7 +63,8 @@ def dev_status():
     return status_dev
 
 
-def correkt_date_time(dt=datetime.datetime.now()):
+def correkt_date_time():
+    dt = datetime.datetime.now()
     delta_time = datetime.timedelta(hours=3)
     dt += delta_time
     return dt
@@ -159,19 +160,31 @@ def send_param():
         form.heat_on.data = param.heat_on
         form.heat_off.data = param.heat_off
         form.pump_on.data = param.pump_on
+        form.water.data = param.water
+        form.delta_loop.data = param.delta_loop
+        form.delta_send.data = param.delta_send
     if form.validate_on_submit():
         if not (0 < form.light_on.data < 1024):
-            return render_template('send_param.html', title='1Ошибка в отправке параметров', up=False, form=form,
+            return render_template('send_param.html', title='Ошибка в отправке параметров', up=False, form=form,
                                    message="Укажите порог включения подсветки в пределах 0-1024")
         if not (0 < form.heat_on.data < 30) or not (0 < form.heat_off.data < 30):
-            return render_template('send_param.html', title='2Ошибка в отправке параметров', up=False, form=form,
+            return render_template('send_param.html', title='Ошибка в отправке параметров', up=False, form=form,
                                    message="Укажите температуру в пределах 0-30")
         if form.heat_on.data >= form.heat_off.data:
-            return render_template('send_param.html', title='3Ошибка в отправке параметров', up=False, form=form,
+            return render_template('send_param.html', title='Ошибка в отправке параметров', up=False, form=form,
                                    message="Температура включения должна быть ниже температуры выключения подогрева")
         if not (0 < form.pump_on.data < 1024):
-            return render_template('send_param.html', title='4Ошибка в отправке параметров', up=False, form=form,
+            return render_template('send_param.html', title='Ошибка в отправке параметров', up=False, form=form,
                                    message="Укажите порого включения полива в пределах 0-1024")
+        if not (0 < form.water.data < 1024):
+            return render_template('send_param.html', title='Ошибка в отправке параметров', up=False, form=form,
+                                   message="Укажите порого включения воды в пределах 0-1024")
+        if not (0 < form.delta_send.data < 1024):
+            return render_template('send_param.html', title='Ошибка в отправке параметров', up=False, form=form,
+                                   message="Укажите время межды отправками в секундах в пределах 0-1024")
+        if not (0 < form.delta_loop.data < 1024):
+            return render_template('send_param.html', title='Ошибка в отправке параметров', up=False, form=form,
+                                   message="Укажите время межды отправками в секундах в пределах 0-1024")
         db_sess = db_session.create_session()
         status = db_sess.query(Status).filter(Status.token == current_user.token).first()
         status.light_on = form.light_on.data
@@ -179,6 +192,10 @@ def send_param():
         status.heat_off = form.heat_off.data
         status.pump_on = form.pump_on.data
         status.send = 0
+        status.water = form.water.data
+        status.delta_send = form.delta_send.data
+        status.delta_loop = form.delta_loop.data
+        status.date_up = correkt_date_time()
         db_sess.commit()
 
 
@@ -193,6 +210,7 @@ def send_param():
 def update(token):
     db_sess = db_session.create_session()
     status = db_sess.query(Status).filter(Status.token == token).first()
+    status.send = 1
     data = {}
     data['light_on'] = status.light_on
     data['heat_on'] = status.heat_on
@@ -202,9 +220,16 @@ def update(token):
     data['heat'] = status.heat
     data['led'] = status.led
     data['fan'] = status.fan
-    status.send = 1
-    status.date = correkt_date_time()
-    print(status.date)
+    data['water'] = status.water
+    data['mode'] = status.mode
+    data['delta_send'] = status.delta_send
+    data['delta_loop'] = status.delta_loop
+    status.date_down = correkt_date_time()
+    print(status.date_up, type(status.date_up))
+    print(status.date_down, type(status.date_down))
+    delta = status.date_down - status.date_up
+    print(delta.total_seconds())
+    data['send'] = int(delta.total_seconds())
     db_sess.commit()
     print(data, correkt_date_time())
     return data
@@ -369,6 +394,7 @@ def buttons():
         text = request.args.get('button_text')
         id = request.args.get('name')
         status.send = 0
+        status.date_up = correkt_date_time()
         if id == 'pump':
             status.pump = not status.pump
             on_off = 'Вкл' if status.pump else 'Выкл'
@@ -382,7 +408,7 @@ def buttons():
             status.led = not status.led
             on_off = 'Вкл' if status.led else 'Выкл'
         db_sess.commit()
-        print(on_off, status.send)
+        print(on_off, status.send, status.date_up)
         return jsonify({'html_paste': on_off})
 
 
