@@ -57,6 +57,24 @@
     </p>
     {% endfor %}
     </p>
+    <p>
+        {{ form.delta_send.label }}<br>
+        {{ form.delta_send(class="form-control") }}<br>
+        {% for error in form.delta_send.errors %}
+    <p class="alert alert-danger" role="alert">
+        {{ error }}
+    </p>
+    {% endfor %}
+    </p>
+    <p>
+        {{ form.delta_loop.label }}<br>
+        {{ form.delta_loop(class="form-control") }}<br>
+        {% for error in form.delta_loop.errors %}
+    <p class="alert alert-danger" role="alert">
+        {{ error }}
+    </p>
+    {% endfor %}
+    </p>
 
     <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
 
