@@ -10,4 +10,5 @@ class Send_param(FlaskForm):
     heat_off = IntegerField('Температура выключения подогрева', validators=[DataRequired()])
     heat_off = IntegerField('Температура выключения подогрева', validators=[DataRequired()])
     pump_on = IntegerField('Порог включения насоса', validators=[DataRequired()])
+    water = IntegerField('Порог низкого уровня воды', validators=[DataRequired()])
     submit = SubmitField('Отправить')
