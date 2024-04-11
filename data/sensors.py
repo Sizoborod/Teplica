@@ -22,6 +22,7 @@ class Sensors(SqlAlchemyBase):
     heat = sqlalchemy.Column(sqlalchemy.Integer, default=0)
     led = sqlalchemy.Column(sqlalchemy.Integer, default=0)
     fan = sqlalchemy.Column(sqlalchemy.Integer, default=0)
+    water = sqlalchemy.Column(sqlalchemy.Integer, default=0)
 
 
     def __repr__(self):
