@@ -20,7 +20,8 @@ class Status(SqlAlchemyBase):
     led = sqlalchemy.Column(sqlalchemy.Integer, default=0)
     fan = sqlalchemy.Column(sqlalchemy.Integer, default=0)
     send = sqlalchemy.Column(sqlalchemy.Integer, default=0)
-
+    water = sqlalchemy.Column(sqlalchemy.Integer, default=0)
+    mode = sqlalchemy.Column(sqlalchemy.Integer, default=0)
 
     def __repr__(self):
         return (f'<Status> {self.token}\n'
