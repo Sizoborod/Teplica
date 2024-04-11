@@ -9,7 +9,8 @@ class Status(SqlAlchemyBase):
     __tablename__ = 'status'
 
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
-    date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
+    date_up = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
+    date_down = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
     token = sqlalchemy.Column(sqlalchemy.String, nullable=True, default='NNNNNNNNNNN')
     light_on = sqlalchemy.Column(sqlalchemy.Integer, nullable=True, default=0)
     heat_on = sqlalchemy.Column(sqlalchemy.Integer, nullable=True, default=0)
@@ -22,6 +23,8 @@ class Status(SqlAlchemyBase):
     send = sqlalchemy.Column(sqlalchemy.Integer, default=0)
     water = sqlalchemy.Column(sqlalchemy.Integer, default=0)
     mode = sqlalchemy.Column(sqlalchemy.Integer, default=0)
+    delta_loop = sqlalchemy.Column(sqlalchemy.Integer, default=0)
+    delta_send = sqlalchemy.Column(sqlalchemy.Integer, default=0)
 
     def __repr__(self):
         return (f'<Status> {self.token}\n'
