@@ -41,8 +41,8 @@ login_manager.login_view = 'login'
 def dev_status():
     db_sess = db_session.create_session()
     status = db_sess.query(Status).filter(Status.token == current_user.token).first()
-    status_dev = {'send': status.send, 'date': status.date_down.strftime("%d.%m.%Y %H:%M:%S")}
-    print(status.pump, status.fan, status.heat, status.led, status.send)
+    status_dev = {'sending': status.sending, 'date': status.date_down.strftime("%d.%m.%Y %H:%M:%S")}
+    print(status.pump, status.fan, status.heat, status.led, status.sending)
 
     if status.pump:
         status_dev['pump'] = 'Вкл'
@@ -191,9 +191,9 @@ def send_param():
         status.heat_on = form.heat_on.data
         status.heat_off = form.heat_off.data
         status.pump_on = form.pump_on.data
-        status.send = 0
+        status.sending = 0
         status.water = form.water.data
-        status.delta_send = form.delta_send.data
+        status.delta_sending = form.delta_sending.data
         status.delta_loop = form.delta_loop.data
         status.date_up = correkt_date_time()
         db_sess.commit()
@@ -210,7 +210,7 @@ def send_param():
 def update(token):
     db_sess = db_session.create_session()
     status = db_sess.query(Status).filter(Status.token == token).first()
-    status.send = 1
+    status.sending = 1
     data = {}
     data['light_on'] = status.light_on
     data['heat_on'] = status.heat_on
@@ -229,7 +229,7 @@ def update(token):
     print(status.date_down, type(status.date_down))
     delta = status.date_down - status.date_up
     print(delta.total_seconds())
-    data['send'] = int(delta.total_seconds())
+    data['sending'] = int(delta.total_seconds())
     db_sess.commit()
     print(data, correkt_date_time())
     return data
@@ -238,15 +238,15 @@ def update(token):
 @login_required
 def logout():
     logout_user()
-    return render_template('readme.html', up=False)
+    return render_template('readme.html', status=dev_status(), up=False)
 
 @app.route('/success')
 def success():
-    return render_template('success.html', up=False)
+    return render_template('success.html', status=dev_status(), up=False)
 
 @app.route('/gauge')
 def gauge():
-    return render_template('gauge.html', up=False)
+    return render_template('gauge.html', status=dev_status(), up=False)
 
 @app.route('/mygauge')
 def mygauge():
@@ -254,7 +254,7 @@ def mygauge():
 
 @app.route('/readme')
 def readme():
-    return render_template('readme.html', up=False)
+    return render_template('readme.html', status=dev_status(), up=False)
 
 @app.route('/')
 @app.route('/dashboard')
@@ -390,10 +390,10 @@ def buttons():
     db_sess = db_session.create_session()
     status = db_sess.query(Status).filter(Status.token == current_user.token).first()
     if request.is_json:
-        print(status.send)
+        print(status.sending)
         text = request.args.get('button_text')
         id = request.args.get('name')
-        status.send = 0
+        status.sending = 0
         status.date_up = correkt_date_time()
         if id == 'pump':
             status.pump = not status.pump
@@ -408,7 +408,7 @@ def buttons():
             status.led = not status.led
             on_off = 'Вкл' if status.led else 'Выкл'
         db_sess.commit()
-        print(on_off, status.send, status.date_up)
+        print(on_off, status.sending, status.date_up)
         return jsonify({'html_paste': on_off})
 
 
