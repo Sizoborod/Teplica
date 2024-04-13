@@ -238,23 +238,23 @@ def update(token):
 @login_required
 def logout():
     logout_user()
-    return render_template('readme.html', up=False)
+    return render_template('readme.html',status=dev_status(), up=False)
 
 @app.route('/success')
 def success():
-    return render_template('success.html', up=False)
+    return render_template('success.html',status=dev_status(), up=False)
 
 @app.route('/gauge')
 def gauge():
-    return render_template('gauge.html', up=False)
+    return render_template('gauge.html',status=dev_status(), up=False)
 
 @app.route('/mygauge')
 def mygauge():
-    return render_template('my_gauge.html', up=False)
+    return render_template('my_gauge.html',status=dev_status(), up=False)
 
 @app.route('/readme')
 def readme():
-    return render_template('readme.html', up=False)
+    return render_template('readme.html',status=dev_status(), up=False)
 
 @app.route('/')
 @app.route('/dashboard')
