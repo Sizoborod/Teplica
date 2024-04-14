@@ -221,7 +221,7 @@ def update(token):
     data['led'] = status.led
     data['fan'] = status.fan
     data['water'] = status.water
-    data['mode'] = status.mode
+    data['control'] = status.control
     data['delta_send'] = status.delta_send
     data['delta_loop'] = status.delta_loop
     status.date_down = correkt_date_time()
@@ -285,7 +285,7 @@ def add_sensors():
     sensor.heat = request.args.get('heat')
     sensor.led = request.args.get('led')
     sensor.fan = request.args.get('fan')
-
+    sensor.water = request.args.get('water')
     # print(sensor)
 
 
