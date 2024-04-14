@@ -22,7 +22,7 @@ class Status(SqlAlchemyBase):
     fan = sqlalchemy.Column(sqlalchemy.Integer, default=0)
     sending = sqlalchemy.Column(sqlalchemy.Integer, default=0)
     water = sqlalchemy.Column(sqlalchemy.Integer, default=0)
-    mode = sqlalchemy.Column(sqlalchemy.Integer, default=0)
+    control = sqlalchemy.Column(sqlalchemy.Integer, default=0)
     delta_loop = sqlalchemy.Column(sqlalchemy.Integer, default=0)
     delta_send = sqlalchemy.Column(sqlalchemy.Integer, default=0)
 
