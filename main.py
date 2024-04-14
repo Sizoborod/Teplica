@@ -42,6 +42,7 @@ def dev_status():
     db_sess = db_session.create_session()
     status = db_sess.query(Status).filter(Status.token == current_user.token).first()
     status_dev = {'sending': status.sending, 'date': status.date_down.strftime("%d.%m.%Y %H:%M:%S")}
+    print('dev_status')
     print(status.pump, status.fan, status.heat, status.led, status.sending)
 
     if status.pump:
@@ -306,7 +307,7 @@ def add_sensors():
 @login_required
 def table_page(page):
     db_sess = db_session.create_session()
-
+    print('table', correkt_date_time())
 
     base_data = db_sess.query(Sensors).filter(current_user.is_authenticated, (Sensors.token == current_user.token) | (current_user.id == 1)).all()
     # print(base_data)
