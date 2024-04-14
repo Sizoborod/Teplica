@@ -331,7 +331,7 @@ def table_page(page):
     return render_template('table.html', len_data=int(len(base_data) / 10) + 1,
                            names=names, status=dev_status(), text_button=name_button, base_data=base_data[::-1],
                            page=int(page), token=current_user.token,
-                           up=True)
+                           up=False)
 
 
 @app.route('/grafik')
@@ -360,7 +360,7 @@ def grafik():
     # print(line_temp_out)
     return render_template('grafik.html', status=dev_status(), text_button=name_button, line1=line_temp_in,
                            token=current_user.token, line2=humidity_in, line3=moisture1, name_x=name_x,
-                           name_grafik='График температуры', up=True)
+                           name_grafik='График температуры', up=False)
 
 
 @app.route("/update5")
