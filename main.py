@@ -151,11 +151,13 @@ def login():
 @app.route('/send_param', methods=['GET', 'POST'])
 @login_required
 def send_param():
+    print(f'send_param')
     form = Send_param()
     db_sess = db_session.create_session()
     param = db_sess.query(Status).filter(Status.token == current_user.token).first()
     # print(param)
     if request.method == 'GET':
+        print(f'send_param GET')
         form.light_on.data = param.light_on
         form.heat_on.data = param.heat_on
         form.heat_off.data = param.heat_off
@@ -164,7 +166,8 @@ def send_param():
         form.delta_loop.data = param.delta_loop
         form.delta_send.data = param.delta_send
     if form.validate_on_submit():
-        if not (0 < form.light_on.data < 1024):
+        print(f'send_param POST')
+        if not (0 < form.light_on.data < 100):
             return render_template('send_param.html', title='Ошибка в отправке параметров', up=False, form=form,
                                    message="Укажите порог включения подсветки в пределах 0-1024")
         if not (0 < form.heat_on.data < 30) or not (0 < form.heat_off.data < 30):
@@ -173,16 +176,16 @@ def send_param():
         if form.heat_on.data >= form.heat_off.data:
             return render_template('send_param.html', title='Ошибка в отправке параметров', up=False, form=form,
                                    message="Температура включения должна быть ниже температуры выключения подогрева")
-        if not (0 < form.pump_on.data < 1024):
+        if not (0 < form.pump_on.data < 100):
             return render_template('send_param.html', title='Ошибка в отправке параметров', up=False, form=form,
                                    message="Укажите порого включения полива в пределах 0-1024")
-        if not (0 < form.water.data < 1024):
+        if not (0 < form.water.data < 100):
             return render_template('send_param.html', title='Ошибка в отправке параметров', up=False, form=form,
                                    message="Укажите порого включения воды в пределах 0-1024")
-        if not (0 < form.delta_send.data < 1024):
+        if not (0 < form.delta_send.data < 100):
             return render_template('send_param.html', title='Ошибка в отправке параметров', up=False, form=form,
                                    message="Укажите время межды отправками в секундах в пределах 0-1024")
-        if not (0 < form.delta_loop.data < 1024):
+        if not (0 < form.delta_loop.data < 100):
             return render_template('send_param.html', title='Ошибка в отправке параметров', up=False, form=form,
                                    message="Укажите время межды отправками в секундах в пределах 0-1024")
         db_sess = db_session.create_session()
@@ -208,6 +211,7 @@ def send_param():
 
 @app.route("/update/<token>")
 def update(token):
+    print(f'update/{token}')
     db_sess = db_session.create_session()
     status = db_sess.query(Status).filter(Status.token == token).first()
     status.sending = 1
@@ -225,10 +229,10 @@ def update(token):
     data['delta_send'] = status.delta_send
     data['delta_loop'] = status.delta_loop
     status.date_down = correkt_date_time()
-    print(status.date_up, type(status.date_up))
-    print(status.date_down, type(status.date_down))
+    # print(status.date_up, type(status.date_up))
+    # print(status.date_down, type(status.date_down))
     delta = status.date_down - status.date_up
-    print(delta.total_seconds())
+    # print(delta.total_seconds())
     data['sending'] = int(delta.total_seconds())
     db_sess.commit()
     print(data, correkt_date_time())
