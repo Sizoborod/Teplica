@@ -36,7 +36,7 @@ login_manager.login_view = 'login'
 def dev_status():
     db_sess = db_session.create_session()
     status = db_sess.query(Status).filter(Status.token == current_user.token).first()
-    status_dev = {'sending': status.sending, 'date': status.date_down.strftime("%d.%m.%Y %H:%M:%S")}
+    status_dev = {'sending': status.sending, 'date_down': status.date_down.strftime("%d.%m.%Y %H:%M:%S")}
     print('dev_status')
     print(status.pump, status.fan, status.heat, status.led, status.sending)
 
