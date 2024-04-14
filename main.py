@@ -190,7 +190,9 @@ def send_param():
             return render_template('send_param.html', title='Ошибка в отправке параметров', up=False, form=form,
                                    message="Укажите время межды отправками в секундах в пределах 0-1024")
         db_sess = db_session.create_session()
+        print(f'{current_user.token} начинаем')
         status = db_sess.query(Status).filter(Status.token == current_user.token).first()
+        print(f'{current_user.token} нашли')
         status.light_on = form.light_on.data
         status.heat_on = form.heat_on.data
         status.heat_off = form.heat_off.data
@@ -200,6 +202,7 @@ def send_param():
         status.delta_send = form.delta_send.data
         status.delta_loop = form.delta_loop.data
         status.date_up = correkt_date_time()
+        print(f'{current_user.token} записываем')
         db_sess.commit()
 
 
