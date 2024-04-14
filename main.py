@@ -22,21 +22,16 @@ from data.status import Status
 from static.text.buttons_name import name_button
 from flask_restful import reqparse, abort, Api, Resource
 
-
 db_session.global_init(name_base)
 app = Flask(__name__)
 api = flask_restful.Api(app)
-
-
-
-
-
 
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
+
 
 def dev_status():
     db_sess = db_session.create_session()
@@ -70,6 +65,7 @@ def correkt_date_time():
     dt += delta_time
     return dt
 
+
 @login_manager.user_loader
 def load_user(user_id):
     db_sess = db_session.create_session()
@@ -80,15 +76,18 @@ def load_user(user_id):
 def main_window():
     return render_template('index.html')
 
+
 @app.route("/map")
 def map():
     map_pars = {}
     return render_template("geo.html")
 
+
 @app.route("/map2")
 def map2():
     map_pars = {}
     return render_template("object_manager.html")
+
 
 @app.route("/r/t/<keys>")
 def rucheek(keys):
@@ -132,6 +131,7 @@ def rucheek(keys):
 
         return f'NO'
 
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
@@ -169,25 +169,32 @@ def send_param():
     if form.validate_on_submit():
         print(f'send_param POST')
         if not (0 < form.light_on.data < 100):
-            return render_template('send_param.html', title='Ошибка в отправке параметров', up=False, form=form,
+            return render_template('send_param.html', title='Ошибка в отправке параметров', up=False,
+                                   status=dev_status(), text_button=name_button, form=form,
                                    message="Укажите порог включения подсветки в пределах 0-1024")
         if not (0 < form.heat_on.data < 30) or not (0 < form.heat_off.data < 30):
-            return render_template('send_param.html', title='Ошибка в отправке параметров', up=False, form=form,
+            return render_template('send_param.html', title='Ошибка в отправке параметров', up=False,
+                                   status=dev_status(), text_button=name_button, form=form,
                                    message="Укажите температуру в пределах 0-30")
         if form.heat_on.data >= form.heat_off.data:
-            return render_template('send_param.html', title='Ошибка в отправке параметров', up=False, form=form,
+            return render_template('send_param.html', title='Ошибка в отправке параметров', up=False,
+                                   status=dev_status(), text_button=name_button, form=form,
                                    message="Температура включения должна быть ниже температуры выключения подогрева")
         if not (0 < form.pump_on.data < 100):
-            return render_template('send_param.html', title='Ошибка в отправке параметров', up=False, form=form,
+            return render_template('send_param.html', title='Ошибка в отправке параметров', up=False,
+                                   status=dev_status(), text_button=name_button, form=form,
                                    message="Укажите порого включения полива в пределах 0-1024")
         if not (0 < form.water.data < 100):
-            return render_template('send_param.html', title='Ошибка в отправке параметров', up=False, form=form,
+            return render_template('send_param.html', title='Ошибка в отправке параметров', up=False,
+                                   status=dev_status(), text_button=name_button, form=form,
                                    message="Укажите порого включения воды в пределах 0-1024")
-        if not (0 < form.delta_send.data < 100):
-            return render_template('send_param.html', title='Ошибка в отправке параметров', up=False, form=form,
+        if not (0 < form.delta_send.data < 1024):
+            return render_template('send_param.html', title='Ошибка в отправке параметров', up=False,
+                                   status=dev_status(), text_button=name_button, form=form,
                                    message="Укажите время межды отправками в секундах в пределах 0-1024")
         if not (0 < form.delta_loop.data < 100):
-            return render_template('send_param.html', title='Ошибка в отправке параметров', up=False, form=form,
+            return render_template('send_param.html', title='Ошибка в отправке параметров', up=False,
+                                   status=dev_status(), text_button=name_button, form=form,
                                    message="Укажите время межды отправками в секундах в пределах 0-1024")
         db_sess = db_session.create_session()
         print(f'{current_user.token} начинаем')
@@ -205,13 +212,12 @@ def send_param():
         print(f'{current_user.token} записываем')
         db_sess.commit()
 
-
-
-
         print('Ок')
         return redirect("/send_param")
     print('Повторяем')
-    return render_template('send_param.html', title='Передача параметров', status=dev_status(), text_button=name_button, form=form, up=False)
+    return render_template('send_param.html', title='Передача параметров', status=dev_status(), text_button=name_button,
+                           form=form, up=False)
+
 
 @app.route("/update/<token>")
 def update(token):
@@ -242,27 +248,33 @@ def update(token):
     print(data, correkt_date_time())
     return data
 
+
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
-    return render_template('readme.html',status=dev_status(), up=False)
+    return render_template('readme.html', status=dev_status(), up=False)
+
 
 @app.route('/success')
 def success():
-    return render_template('success.html',status=dev_status(), up=False)
+    return render_template('success.html', status=dev_status(), up=False)
+
 
 @app.route('/gauge')
 def gauge():
-    return render_template('gauge.html',status=dev_status(), up=False)
+    return render_template('gauge.html', status=dev_status(), up=False)
+
 
 @app.route('/mygauge')
 def mygauge():
-    return render_template('my_gauge.html',status=dev_status(), up=False)
+    return render_template('my_gauge.html', status=dev_status(), up=False)
+
 
 @app.route('/readme')
 def readme():
-    return render_template('readme.html',status=dev_status(), up=False)
+    return render_template('readme.html', status=dev_status(), up=False)
+
 
 @app.route('/')
 @app.route('/dashboard')
@@ -273,7 +285,8 @@ def dashboard():
     base_data = db_sess.query(Sensors).filter(current_user.is_authenticated, (Sensors.token == current_user.token)
                                               | (current_user.id == 1)).all()
     # print(base_data)
-    return render_template('dashboard.html', status=dev_status(), token=current_user.token, data=base_data[-1], text_button=name_button, up=False)
+    return render_template('dashboard.html', status=dev_status(), token=current_user.token, data=base_data[-1],
+                           text_button=name_button, up=False)
 
 
 @app.route('/add_sensors')
@@ -296,12 +309,9 @@ def add_sensors():
     sensor.water = request.args.get('water')
     # print(sensor)
 
-
-
     db_sess.add(sensor)
     db_sess.commit()
     return "OK"
-
 
     return render_template('success.html', up=False)
 
@@ -312,14 +322,17 @@ def table_page(page):
     db_sess = db_session.create_session()
     print('table', correkt_date_time())
 
-    base_data = db_sess.query(Sensors).filter(current_user.is_authenticated, (Sensors.token == current_user.token) | (current_user.id == 1)).all()
+    base_data = db_sess.query(Sensors).filter(current_user.is_authenticated,
+                                              (Sensors.token == current_user.token) | (current_user.id == 1)).all()
     # print(base_data)
     users = db_sess.query(User).all()
     names = {name.token: (name.surname, name.name, name.email) for name in users}
     # print(int(len(base_data) / 10))
     return render_template('table.html', len_data=int(len(base_data) / 10) + 1,
-                           names=names, status=dev_status(), text_button=name_button, base_data=base_data[::-1], page=int(page), token=current_user.token,
+                           names=names, status=dev_status(), text_button=name_button, base_data=base_data[::-1],
+                           page=int(page), token=current_user.token,
                            up=True)
+
 
 @app.route('/grafik')
 @login_required
@@ -336,8 +349,8 @@ def grafik():
     moisture1 = []
 
     for i in base_data[-count:]:
-        #line_temp_in.append({'x':i.date.strftime("%H:%M:%S"), 'y':i.temp_in/1000 })
-        #line_temp_out.append({'x':i.date.strftime("%H:%M:%S"), 'y':i.temp_out/1000 })
+        # line_temp_in.append({'x':i.date.strftime("%H:%M:%S"), 'y':i.temp_in/1000 })
+        # line_temp_out.append({'x':i.date.strftime("%H:%M:%S"), 'y':i.temp_out/1000 })
         line_temp_in.append(i.temp_in)
         line_temp_out.append(i.temp_out)
         name_x.append(i.date.strftime("%H%M"))
@@ -345,7 +358,10 @@ def grafik():
         moisture1.append(i.moisture1)
     # print(line_temp_in)
     # print(line_temp_out)
-    return render_template('grafik.html',status=dev_status(), text_button=name_button, line1=line_temp_in, token=current_user.token, line2=humidity_in, line3=moisture1, name_x=name_x, name_grafik='График температуры', up=True )
+    return render_template('grafik.html', status=dev_status(), text_button=name_button, line1=line_temp_in,
+                           token=current_user.token, line2=humidity_in, line3=moisture1, name_x=name_x,
+                           name_grafik='График температуры', up=True)
+
 
 @app.route("/update5")
 def update5():
@@ -356,6 +372,7 @@ def update5():
     level_hudrom = ran.randint(0, 1000)
     return f'<p>level_led={level_led}<p>level_fan={level_fan}<p>level_head_up={level_head_up}<p>level_head_down={level_head_down}<p>level_hudrom={level_hudrom}'
 
+
 @app.route("/update_2")
 def update_2():
     level_led = ran.randint(0, 1000)
@@ -365,6 +382,7 @@ def update_2():
     level_hudrom = ran.randint(0, 1000)
     return f'level_led={level_led}#level_fan={level_fan}#level_head_up={level_head_up}#level_head_down={level_head_down}#level_hudrom={level_hudrom}'
 
+
 @app.route("/update_3")
 def update_3():
     level_led = ran.randint(0, 1000)
@@ -373,7 +391,6 @@ def update_3():
     level_head_down = ran.randint(level_head_up, 30)
     level_hudrom = ran.randint(0, 1000)
     return f'#_1{level_led}#_2{level_fan}#_3{level_head_up}#_4{level_head_down}#_5{level_hudrom}'
-
 
 
 '''@app.route('/process_data/', methods=['POST'])
@@ -424,6 +441,5 @@ def buttons():
 
 
 if __name__ == '__main__':
-
     app.run(port=5000, host='127.0.0.1')
     '''serve(app, host='127.0.0.1', port=5000)'''
