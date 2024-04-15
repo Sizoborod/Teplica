@@ -34,28 +34,34 @@ login_manager.login_view = 'login'
 
 
 def dev_status():
-    db_sess = db_session.create_session()
-    status = db_sess.query(Status).filter(Status.token == current_user.token).first()
-    status_dev = {'sending': status.sending, 'date_down': status.date_down.strftime("%d.%m.%Y %H:%M:%S")}
-    print('dev_status')
-    print(status.pump, status.fan, status.heat, status.led, status.sending)
+    if current_user.is_authenticated:
 
-    if status.pump:
-        status_dev['pump'] = 'Вкл'
+        db_sess = db_session.create_session()
+        status = db_sess.query(Status).filter(Status.token == current_user.token).first()
+        db_sess.close()
+        status_dev = {'sending': status.sending, 'date_down': status.date_down.strftime("%d.%m.%Y %H:%M:%S")}
+        print('dev_status')
+        print(status.pump, status.fan, status.heat, status.led, status.sending)
+
+        if status.pump:
+            status_dev['pump'] = 'Вкл'
+        else:
+            status_dev['pump'] = 'Выкл'
+        if status.fan:
+            status_dev['fan'] = 'Вкл'
+        else:
+            status_dev['fan'] = 'Выкл'
+        if status.led:
+            status_dev['led'] = 'Вкл'
+        else:
+            status_dev['led'] = 'Выкл'
+        if status.heat:
+            status_dev['heat'] = 'Вкл'
+        else:
+            status_dev['heat'] = 'Выкл'
     else:
-        status_dev['pump'] = 'Выкл'
-    if status.fan:
-        status_dev['fan'] = 'Вкл'
-    else:
-        status_dev['fan'] = 'Выкл'
-    if status.led:
-        status_dev['led'] = 'Вкл'
-    else:
-        status_dev['led'] = 'Выкл'
-    if status.heat:
-        status_dev['heat'] = 'Вкл'
-    else:
-        status_dev['heat'] = 'Выкл'
+        status_dev = {}
+
     return status_dev
 
 
@@ -139,6 +145,7 @@ def login():
         db_sess = db_session.create_session()
         user = db_sess.query(User).filter(User.email == form.email.data).first()
         users = db_sess.query(User).all()
+        db_sess.close()
         msg = (f'{user} - User.email\n{form.password.data} - form.password.data\n'
                f'{form.email.data} - form.email.data\n{users} - users')
         a = f'___ - user.check_password(form.password.data)\n'
@@ -211,7 +218,7 @@ def send_param():
         status.date_up = correkt_date_time()
         print(f'{current_user.token} записываем')
         db_sess.commit()
-
+        db_sess.close()
         print('Ок')
         return redirect("/send_param")
     print('Повторяем')
@@ -245,6 +252,7 @@ def update(token):
     # print(delta.total_seconds())
     data['sending'] = int(delta.total_seconds())
     db_sess.commit()
+    db_sess.close()
     print(data, correkt_date_time())
     return data
 
@@ -271,12 +279,13 @@ def mygauge():
     return render_template('my_gauge.html', status=dev_status(), up=False)
 
 
+@app.route('/')
 @app.route('/readme')
 def readme():
     return render_template('readme.html', status=dev_status(), up=False)
 
 
-@app.route('/')
+
 @app.route('/dashboard')
 @login_required
 def dashboard():
@@ -285,6 +294,7 @@ def dashboard():
     base_data = db_sess.query(Sensors).filter(current_user.is_authenticated, (Sensors.token == current_user.token)
                                               | (current_user.id == 1)).all()
     # print(base_data)
+    db_sess.close()
     return render_template('dashboard.html', status=dev_status(), token=current_user.token, data=base_data[-1],
                            text_button=name_button, up=False)
 
@@ -311,6 +321,7 @@ def add_sensors():
 
     db_sess.add(sensor)
     db_sess.commit()
+    db_sess.close()
     return "OK"
 
     return render_template('success.html', up=False)
@@ -328,6 +339,7 @@ def table_page(page):
     users = db_sess.query(User).all()
     names = {name.token: (name.surname, name.name, name.email) for name in users}
     # print(int(len(base_data) / 10))
+    db_sess.close()
     return render_template('table.html', len_data=int(len(base_data) / 10) + 1,
                            names=names, status=dev_status(), text_button=name_button, base_data=base_data[::-1],
                            page=int(page), token=current_user.token,
@@ -358,47 +370,11 @@ def grafik():
         moisture1.append(i.moisture1)
     # print(line_temp_in)
     # print(line_temp_out)
+    db_sess.close()
     return render_template('grafik.html', status=dev_status(), text_button=name_button, line1=line_temp_in,
                            token=current_user.token, line2=humidity_in, line3=moisture1, name_x=name_x,
                            name_grafik='График температуры', up=False)
 
-
-@app.route("/update5")
-def update5():
-    level_led = ran.randint(0, 1000)
-    level_fan = ran.randint(20, 30)
-    level_head_up = ran.randint(0, 20)
-    level_head_down = ran.randint(level_head_up, 30)
-    level_hudrom = ran.randint(0, 1000)
-    return f'<p>level_led={level_led}<p>level_fan={level_fan}<p>level_head_up={level_head_up}<p>level_head_down={level_head_down}<p>level_hudrom={level_hudrom}'
-
-
-@app.route("/update_2")
-def update_2():
-    level_led = ran.randint(0, 1000)
-    level_fan = ran.randint(20, 30)
-    level_head_up = ran.randint(0, 20)
-    level_head_down = ran.randint(level_head_up, 30)
-    level_hudrom = ran.randint(0, 1000)
-    return f'level_led={level_led}#level_fan={level_fan}#level_head_up={level_head_up}#level_head_down={level_head_down}#level_hudrom={level_hudrom}'
-
-
-@app.route("/update_3")
-def update_3():
-    level_led = ran.randint(0, 1000)
-    level_fan = ran.randint(20, 30)
-    level_head_up = ran.randint(0, 20)
-    level_head_down = ran.randint(level_head_up, 30)
-    level_hudrom = ran.randint(0, 1000)
-    return f'#_1{level_led}#_2{level_fan}#_3{level_head_up}#_4{level_head_down}#_5{level_hudrom}'
-
-
-'''@app.route('/process_data/', methods=['POST'])
-def doit():
-    data = request.get_json(silent=True)
-    index = data["index"]
-    print(data, index)
-    return data'''
 
 
 @app.route('/process_data/', methods=['POST'])
@@ -433,6 +409,7 @@ def buttons():
             status.led = not status.led
             on_off = 'Вкл' if status.led else 'Выкл'
         db_sess.commit()
+        db_sess.close()
         print(on_off, status.sending, status.date_up)
         return jsonify({'html_paste': on_off})
 
