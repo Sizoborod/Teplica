@@ -335,6 +335,8 @@ def table_page(page):
 
     base_data = db_sess.query(Sensors).filter(current_user.is_authenticated,
                                               (Sensors.token == current_user.token) | (current_user.id == 1)).all()
+
+    base_data = base_data[:100]
     # print(base_data)
     users = db_sess.query(User).all()
     names = {name.token: (name.surname, name.name, name.email) for name in users}
