@@ -250,7 +250,7 @@ def update(token):
     # print(status.date_down, type(status.date_down))
     delta = status.date_down - status.date_up
     # print(delta.total_seconds())
-    data['sending'] = int(delta.total_seconds())
+    data['sending'] = 0 if status.delta_loop > int(delta.total_seconds()) else status.delta_loop - int(delta.total_seconds())
     db_sess.commit()
     db_sess.close()
     print(data, correkt_date_time())
