@@ -246,11 +246,12 @@ def update(token):
     data['delta_send'] = status.delta_send
     data['delta_loop'] = status.delta_loop
     status.date_down = correkt_date_time()
-    # print(status.date_up, type(status.date_up))
-    # print(status.date_down, type(status.date_down))
+    print(status.date_up, type(status.date_up))
+    print(status.date_down, type(status.date_down))
     delta = status.date_down - status.date_up
     # print(delta.total_seconds())
-    data['sending'] = 0 if status.delta_loop > int(delta.total_seconds()) else status.delta_loop - int(delta.total_seconds())
+    data['sending'] = 0
+    #if status.delta_loop > int(delta.total_seconds()) else status.delta_loop - int(delta.total_seconds())
     db_sess.commit()
     db_sess.close()
     print(data, correkt_date_time())
@@ -412,7 +413,7 @@ def buttons():
             on_off = 'Вкл' if status.led else 'Выкл'
         db_sess.commit()
         db_sess.close()
-        print(on_off, status.sending, status.date_up)
+        # print(on_off, status.sending, status.date_up)
         return jsonify({'html_paste': on_off})
 
 
