@@ -40,6 +40,15 @@
     {% endfor %}
     </p>
     <p>
+        {{ form.fan_on.label }}<br>
+        {{ form.fan_on(class="form-control") }}<br>
+        {% for error in form.fan_on.errors %}
+    <p class="alert alert-danger" role="alert">
+        {{ error }}
+    </p>
+    {% endfor %}
+    </p>
+    <p>
         {{ form.pump_on.label }}<br>
         {{ form.pump_on(class="form-control") }}<br>
         {% for error in form.pump_on.errors %}

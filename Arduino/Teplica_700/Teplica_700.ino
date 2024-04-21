@@ -174,25 +174,32 @@ void loop() {
   delay(1000);
   readSensors();
 
-  if (led) {
+  if (Light < light_on) {
     ON_Led();
+    led = 1;
   } else {
     OFF_Led();
+    led = 0;
   }
-  if (heat) {
+  if ((Temp_in > heat_on) && (Temp_in < heat_off)) {
     ON_Heat();
+    heat = 1;
+    
   } else {
     OFF_Heat();
+    heat = 0;
   }
   if (pump) {
     ON_Pump();
   } else {
     OFF_Pump();
   }
-  if (fan) {
+  if ((Temp_in > Temp_out) && (Temp_in > Temp_out)) {
     ON_Fan();
+    fan = 1;
   } else {
     OFF_Fan();
+    fan = 0;
   }
   timeloop += 1;
   timesend += 1;
@@ -249,13 +256,13 @@ bool TimeAndWeather () {                                               // Фун
       delta_send =  root["delta_send"].as<String>().toInt();
       delta_loop =  root["delta_loop"].as<String>().toInt();
       sending =  root["sending"].as<String>().toInt();
-      lcd.setCursor(16, 2);
-      lcd.print("read");
+      lcd.setCursor(15, 2);
+      lcd.print("R");
 
     }
     else {
-      lcd.setCursor(16, 2);
-      lcd.print("lost");
+      lcd.setCursor(15, 2);
+      lcd.print("L");
     }
 
 
@@ -315,32 +322,32 @@ void testingsystem(int testing) {
   lcd.print("ON ");
   ON_Pump();
   delay(testing);
-  lcd.setCursor(16, 0);
-  lcd.print("OFF");
+  //lcd.setCursor(16, 0);
+  //lcd.print("OFF");
   OFF_Pump();
   delay(1000);
   lcd.setCursor(16, 1);
   lcd.print("ON ");
   ON_Heat();
   delay(testing);
-  lcd.setCursor(16, 1);
-  lcd.print("OFF");
+  //lcd.setCursor(16, 1);
+  //lcd.print("OFF");
   OFF_Heat();
   delay(1000);
   lcd.setCursor(15, 2);
   lcd.print("ON ");
   ON_Led();
   delay(testing);
-  lcd.setCursor(15, 2);
-  lcd.print("OFF");
+  //lcd.setCursor(15, 2);
+  //lcd.print("OFF");
   OFF_Led();
   delay(1000);
   lcd.setCursor(15, 3);
   lcd.print("ON ");
   ON_Fan();
   delay(testing);
-  lcd.setCursor(15, 3);
-  lcd.print("OFF");
+  //lcd.setCursor(15, 3);
+  //lcd.print("OFF");
   OFF_Fan();
   delay(1000);
 
@@ -499,8 +506,8 @@ void sendSensors() {
     Serial.println(url);
     client.println(url); // Отправляем параметры запроса
     //delay(500);
-    lcd.setCursor(16, 2);
-    lcd.print("send");// Даём серверу время, чтобы обработать запрос
+    lcd.setCursor(15, 2);
+    lcd.print("S");// Даём серверу время, чтобы обработать запрос
 
   }
 }
@@ -562,8 +569,11 @@ void printDisplayParam() {
   lcd.print(f_heat);
   lcd.print(f_led);
   lcd.print(f_fan);
-
-
+lcd.setCursor(16, 2);
+lcd.print(pump);
+  lcd.print(heat);
+  lcd.print(led);
+  lcd.print(fan);
   lcd.setCursor(11, 0);
   lcd.print("     ");
   lcd.setCursor(11, 0);

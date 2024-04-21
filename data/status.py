@@ -15,6 +15,7 @@ class Status(SqlAlchemyBase):
     light_on = sqlalchemy.Column(sqlalchemy.Integer, nullable=True, default=0)
     heat_on = sqlalchemy.Column(sqlalchemy.Integer, nullable=True, default=0)
     heat_off = sqlalchemy.Column(sqlalchemy.Integer, nullable=True, default=0)
+    fan_on = sqlalchemy.Column(sqlalchemy.Integer, nullable=True, default=0)
     pump_on = sqlalchemy.Column(sqlalchemy.Integer, nullable=True, default=0)
     pump = sqlalchemy.Column(sqlalchemy.Integer, default=0)
     heat = sqlalchemy.Column(sqlalchemy.Integer, default=0)

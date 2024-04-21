@@ -169,6 +169,7 @@ def send_param():
         form.light_on.data = param.light_on
         form.heat_on.data = param.heat_on
         form.heat_off.data = param.heat_off
+        form.fan_on.data = param.fan_on
         form.pump_on.data = param.pump_on
         form.water.data = param.water
         form.delta_loop.data = param.delta_loop
@@ -183,6 +184,10 @@ def send_param():
             return render_template('send_param.html', title='Ошибка в отправке параметров', up=False,
                                    status=dev_status(), text_button=name_button, form=form,
                                    message="Укажите температуру в пределах 0-30")
+        if not(0 < form.fan_on.data < 50):
+            return render_template('send_param.html', title='Ошибка в отправке параметров', up=False,
+                                   status=dev_status(), text_button=name_button, form=form,
+                                   message="Укажите температуру вентилятора в пределах 0-50")
         if form.heat_on.data >= form.heat_off.data:
             return render_template('send_param.html', title='Ошибка в отправке параметров', up=False,
                                    status=dev_status(), text_button=name_button, form=form,
@@ -190,11 +195,11 @@ def send_param():
         if not (0 < form.pump_on.data < 100):
             return render_template('send_param.html', title='Ошибка в отправке параметров', up=False,
                                    status=dev_status(), text_button=name_button, form=form,
-                                   message="Укажите порого включения полива в пределах 0-1024")
+                                   message="Укажите порого включения полива в пределах 0-100")
         if not (0 < form.water.data < 100):
             return render_template('send_param.html', title='Ошибка в отправке параметров', up=False,
                                    status=dev_status(), text_button=name_button, form=form,
-                                   message="Укажите порого включения воды в пределах 0-1024")
+                                   message="Укажите порого включения воды в пределах 0-100")
         if not (0 < form.delta_send.data < 1024):
             return render_template('send_param.html', title='Ошибка в отправке параметров', up=False,
                                    status=dev_status(), text_button=name_button, form=form,
@@ -202,13 +207,14 @@ def send_param():
         if not (0 < form.delta_loop.data < 100):
             return render_template('send_param.html', title='Ошибка в отправке параметров', up=False,
                                    status=dev_status(), text_button=name_button, form=form,
-                                   message="Укажите время межды отправками в секундах в пределах 0-1024")
+                                   message="Укажите время межды отправками в секундах в пределах 0-100")
         db_sess = db_session.create_session()
         print(f'{current_user.token} начинаем')
         status = db_sess.query(Status).filter(Status.token == current_user.token).first()
         print(f'{current_user.token} нашли')
         status.light_on = form.light_on.data
         status.heat_on = form.heat_on.data
+        status.fan_on = form.fan_on.data
         status.heat_off = form.heat_off.data
         status.pump_on = form.pump_on.data
         status.sending = 0
@@ -236,6 +242,7 @@ def update(token):
     data['light_on'] = status.light_on
     data['heat_on'] = status.heat_on
     data['heat_off'] = status.heat_off
+    data['fan_on'] = status.heat_off
     data['pump_on'] = status.pump_on
     data['pump'] = status.pump
     data['heat'] = status.heat
