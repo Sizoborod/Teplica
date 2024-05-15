@@ -38,9 +38,10 @@ WiFiClient client;                        // Создаём объект для 
    d8 Подсветка
 
    ВХОДЫ
-   влажность А0
-   Влажность А1
-   освешеность А4
+   освешеность А0
+   влажность А1
+   Влажность А2
+   уровень воды А4
    Температура внутри D2
    Температура снаружи D5
 
@@ -50,10 +51,10 @@ WiFiClient client;                        // Создаём объект для 
 #define DHTTYPE DHT11
 DHT dht_in(DHTPIN_in, DHTTYPE);
 DHT dht_out(DHTPIN_out, DHTTYPE);
-#define pin_Pump 7
-#define pin_Heat 6
-#define pin_Led 5
-#define pin_Fan 4
+#define pin_Pump 4
+#define pin_Heat 5
+#define pin_Led 6
+#define pin_Fan 7
 
 void OFF_Led();
 void ON_Heat();
@@ -82,12 +83,14 @@ int f_led = 0;
 int light_on = 65;
 int heat_on = 15;
 int heat_off = 25;
+int fan_on = 25;
 int pump_on = 60;
 int water = 60;
 int control = 0;
 int delta_send = 300;
 int delta_loop = 30;
 int sending = 0;
+bool rebut = false;
 
 int timeup = 0;
 const char* up[]  = {
@@ -155,17 +158,19 @@ void setup() {
     delay(500);                                               //  делаем задержку в пол секунды, пока соединение не установится
   Serial.print(WiFi.localIP());
   lcd.setCursor(0, 2);
-  lcd.print("Connekt Wi-Fi");// печатаем нужную строку
+  lcd.print("Connect Wi-Fi");// печатаем нужную строку
   lcd.setCursor(0, 3);// переводим курсор в нужную позицию
   lcd.print(WiFi.localIP());// печатаем нужную строку
   delay(2000);
 
 
-  testingsystem(5);                                 // запускаем тестирование реле на работу. Должна прощелкать четырмя реле
-
-  while (!TimeAndWeather())                                   // Синхронизируем время микроконтроллера с реальным временем и получаем информацию о погоде
+  testingsystem(timetesting);                                 // запускаем тестирование реле на работу. Должна прощелкать четырмя реле
+  int count_connect = 0;
+  while (!TimeAndWeather() || count_connect < 5)                                   // Синхронизируем время микроконтроллера с реальным временем и получаем информацию о погоде
+  {
     delay(1000);
-
+    count_connect = count_connect + 1;
+  }
   lcd.clear();
 }
 
@@ -174,27 +179,41 @@ void loop() {
   delay(1000);
   readSensors();
 
-  if (Light < light_on) {
+  if (Light < light_on  || f_led) {
     ON_Led();
     led = 1;
   } else {
     OFF_Led();
     led = 0;
   }
-  if ((Temp_in > heat_on) && (Temp_in < heat_off)) {
+  if ((Temp_in > heat_on) && (Temp_in < heat_off)  || f_heat) {
     ON_Heat();
     heat = 1;
-    
+
   } else {
     OFF_Heat();
     heat = 0;
   }
-  if (pump) {
+  if ( ((Moisture_1 + Moisture_2) / 2  < pump_on) && (Level_water > 20) || f_pump) {
     ON_Pump();
+    pump = 1;
+    lcd.begin(20, 4);// у нас экран 16 столбцов на 2 строки
+    lcd.setBacklight(255); //установить яркость подсветки на максимум
+    lcd.clear(); // очистить экран и установить курсор в позицию 0, 0
+    rebut = true;
   } else {
     OFF_Pump();
+    pump = 0;
+    if (rebut) {
+      lcd.begin(20, 4);// у нас экран 16 столбцов на 2 строки
+
+      lcd.setBacklight(255); //установить яркость подсветки на максимум
+      lcd.clear(); // очистить экран и установить курсор в позицию 0, 0
+    }
+    rebut = false;
   }
-  if ((Temp_in > Temp_out) && (Temp_in > Temp_out)) {
+
+  if ((Temp_in > Temp_out) && (fan_on <= Temp_in) || f_fan) {
     ON_Fan();
     fan = 1;
   } else {
@@ -206,8 +225,13 @@ void loop() {
   timeup += 1;
   if (timeloop >= delta_loop - sending) {
     timeloop = 0;
-    while (!TimeAndWeather())                                   // Синхронизируем время микроконтроллера с реальным временем и получаем информацию о погоде
-      delay(5000);
+    int count_connect = 0;
+    while (!TimeAndWeather() || count_connect < 5)                                   // Синхронизируем время микроконтроллера с реальным временем и получаем информацию о погоде
+    {
+      delay(1000);
+      count_connect = count_connect + 1;
+    }
+
   }
   if (timesend >= delta_send) {
     timesend = 0;
@@ -225,8 +249,8 @@ void loop() {
 }
 
 bool TimeAndWeather () {                                               // Функция синхронизации времени работы программы с реальным временем и получения информации о погоде
-  if (client.connect("nikitinan.pythonanywhere.com", 80)) {                                   // Если удаётся установить соединение с указанным хостом (Порт 443 для https)
-    client.println("GET /update/bXgLsghZdNVDUDM HTTP/1.1\r\nHost: nikitinan.pythonanywhere.com\r\nConnection: close\r\n\r\n"); // Отправляем параметры запроса
+  if (client.connect("teplica.pythonanywhere.com", 80)) {                                   // Если удаётся установить соединение с указанным хостом (Порт 443 для https)
+    client.println("GET /update/bXgLsghZdNVDUDM HTTP/1.1\r\nHost: teplica.pythonanywhere.com\r\nConnection: close\r\n\r\n"); // Отправляем параметры запроса
     delay(200);                                                             // Даём серверу время, чтобы обработать запрос
     char endOfHeaders[] = "\r\n\r\n";
 
@@ -246,6 +270,7 @@ bool TimeAndWeather () {                                               // Фун
       light_on = root["light_on"].as<String>().toInt();
       heat_on =  root["heat_on"].as<String>().toInt();
       heat_off =  root["heat_off"].as<String>().toInt();
+      fan_on =  root["heat_on"].as<String>().toInt();
       pump_on =  root["pump_on"].as<String>().toInt();
       f_pump =  root["pump"].as<String>().toInt();
       f_heat =  root["heat"].as<String>().toInt();
@@ -360,6 +385,8 @@ void printserial() {
   Serial.print(heat_on);
   Serial.print(" heat_off = ");
   Serial.print(heat_off);
+  Serial.print(" fan_on = ");
+  Serial.println(fan_on);
   Serial.print(" pump_on = ");
   Serial.print(pump_on);
   Serial.print(" f_pump = ");
@@ -439,6 +466,13 @@ void testloop() {
 
 
 void readSensors() {
+  Wire.begin();
+  ADS.begin();
+
+  dht_in.begin();
+  dht_out.begin();
+
+
   ADS.setGain(0);
 
   int16_t val_0 = ADS.readADC(0);
@@ -454,10 +488,9 @@ void readSensors() {
   Serial.print("\tAnalog3: "); Serial.print(val_3); Serial.print('\t'); Serial.println(val_3 * f, 3);
   Serial.println();
 
-  Moisture_1 = 100-val_1 * f * 100/ 5.05;
-  Moisture_2 = 100-val_2 * f * 100/ 5.05;
-  Light = 100-
-  val_0 * f * 100/ 5.05;
+  Moisture_1 = 100 - val_1 * f * 100 / 5.05;
+  Moisture_2 = 100 - val_2 * f * 100 / 5.05;
+  Light = 100 - val_0 * f * 100 / 5.05;
   Temp_in = dht_in.readTemperature();
   Humidity_in = dht_in.readHumidity();
   if (Temp_in > 100) {
@@ -470,11 +503,11 @@ void readSensors() {
     Temp_out = 0;
     Humidity_out = 0;
   }
-  Level_water = val_3 * f * 100/ 5.05;;
+  Level_water = val_3 * f * 100 / 5.05;;
 }
 
 void sendSensors() {
-  if (client.connect("nikitinan.pythonanywhere.com", 80)) {
+  if (client.connect("teplica.pythonanywhere.com", 80)) {
     // Если удаётся установить соединение с указанным хостом (Порт 443 для https)
     String url = "GET /add_sensors?";
     url += "token=" + token;
@@ -502,7 +535,7 @@ void sendSensors() {
     url += led;
     url += "&fan=";
     url += fan;
-    url += " HTTP/1.1\r\nHost: nikitinan.pythonanywhere.com\r\nConnection: close\r\n\r\n";
+    url += " HTTP/1.1\r\nHost: teplica.pythonanywhere.com\r\nConnection: close\r\n\r\n";
     Serial.println(url);
     client.println(url); // Отправляем параметры запроса
     //delay(500);
@@ -569,8 +602,8 @@ void printDisplayParam() {
   lcd.print(f_heat);
   lcd.print(f_led);
   lcd.print(f_fan);
-lcd.setCursor(16, 2);
-lcd.print(pump);
+  lcd.setCursor(16, 2);
+  lcd.print(pump);
   lcd.print(heat);
   lcd.print(led);
   lcd.print(fan);
@@ -584,7 +617,7 @@ lcd.print(pump);
   lcd.setCursor(11, 1);
   lcd.print(delta_loop);
   lcd.setCursor(11, 2);
-  lcd.print("     ");
+  lcd.print("    ");
   lcd.setCursor(11, 2);
   lcd.print(sending);
   /*
