@@ -335,9 +335,17 @@ def add_sensors():
     text += f"Влажность(внутри) = {request.args.get('h_in')}\n"
     text += f"t(снаружи) = {request.args.get('t_out')}\n"
     text += f"Влажность(снаружи) = {request.args.get('h_out')}\n"
+
+    
+    text += f"Освещенность = {request.args.get('light')}\n"
+    text += f"Уровень воды = {request.args.get('water')}\n"
+
     
     text += f"Влажность почвы = {int((int(request.args.get('mois1')) + int(request.args.get('mois2')))/2)}\n"
     text += f"Насос {'ВКЛ' if int(request.args.get('pump')) else 'ВЫКЛ'}\n"
+    text += f"Подсветка {'ВКЛ' if int(request.args.get('led')) else 'ВЫКЛ'}\n"
+    text += f"Подогрев {'ВКЛ' if int(request.args.get('heat')) else 'ВЫКЛ'}\n"
+    text += f"Вентилятор {'ВКЛ' if int(request.args.get('fan')) else 'ВЫКЛ'}\n"
     url = f"https://api.telegram.org/bot7049728878:AAFmieYbaKdMKC9i3s96UVY4xQFtuvn7eGg/sendMessage?chat_id=6556861081&text={text}"
     r = requests.get(url)
     r.status_code
