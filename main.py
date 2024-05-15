@@ -330,7 +330,7 @@ def add_sensors():
     db_sess.add(sensor)
     db_sess.commit()
     db_sess.close()
-    text = f"Данные получены\n{sensor}"
+    text = f"Данные получены"
     url = f"https://api.telegram.org/bot7049728878:AAFmieYbaKdMKC9i3s96UVY4xQFtuvn7eGg/sendMessage?chat_id=6556861081&text={text}"
     r = requests.get(url)
     r.status_code
